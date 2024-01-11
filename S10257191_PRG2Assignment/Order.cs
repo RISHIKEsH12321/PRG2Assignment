@@ -16,7 +16,7 @@ namespace S10257191_PRG2Assignment
 
         public int Id { get; set; }
         public DateTime TimeRecieved { get; set; }
-        public DateTime? TimeFulfilled { get; set;}
+        public DateTime? TimeFulfilled { get; set; }
 
         public List<IceCream> IceCreamList { get; set; }
 
@@ -49,7 +49,7 @@ namespace S10257191_PRG2Assignment
                         if (Console.ReadLine() == "1")
                         {
                             newIceCream = new Cup();
-                            
+
                         }
                         else if (Console.ReadLine() == "2")
                         {
@@ -83,7 +83,7 @@ namespace S10257191_PRG2Assignment
             //            num = Convert.ToInt16(Console.ReadLine());
             //        }
             //        break;
-                    
+
             //    }
             //    catch (Exception)
             //    {
@@ -94,7 +94,7 @@ namespace S10257191_PRG2Assignment
 
             //Creating the Falvour
             while (true)
-            {                 
+            {
                 if (scoops == 3)
                 {
                     break;
@@ -111,7 +111,7 @@ namespace S10257191_PRG2Assignment
                     "\r\n[6] Sea Salt"
                     );
 
-                
+
                 while (scoops < 3)
                 {
                     Dictionary<string, string> FlavourDic = new Dictionary<string, string>();
@@ -152,9 +152,9 @@ namespace S10257191_PRG2Assignment
                             Console.WriteLine("Invalid Number.");
                         }
                     }
-                        
+
                 }
-                
+
             }
 
 
@@ -170,12 +170,9 @@ namespace S10257191_PRG2Assignment
 
                 Console.Write("Enter the ");
             }
-
-
-
-
         }
-
-
     }
 }
+
+
+//Fuck

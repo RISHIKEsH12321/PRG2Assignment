@@ -42,7 +42,10 @@ namespace S10257191_PRG2Assignment
         public Cup() { }
 
         public Cup(string option, int scoops, List<Flavour> flavours, List<Topping> toppings) 
-            : base(option, scoops, flavours, toppings) { }
+            : base(option, scoops, flavours, toppings)
+        {
+            Option = "1";
+        }
 
         public override double CalculatePrice()
         {
@@ -93,6 +96,7 @@ namespace S10257191_PRG2Assignment
             : base(option, scoops, flavours, toppings)
         {
             Dipped = dip;
+            Option = "2";
         }
 
         public override double CalculatePrice()
@@ -146,6 +150,7 @@ namespace S10257191_PRG2Assignment
             : base(option, scoops, flavours, toppings)
         {
             WaffleFlavour = waffle;
+            Option = "3";
         }
 
         public override double CalculatePrice()

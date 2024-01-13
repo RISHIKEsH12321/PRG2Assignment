@@ -27,18 +27,34 @@ while (true)
     int opt = Convert.ToInt32(Console.ReadLine());
     if (opt == 0)
     {
+        Console.WriteLine("Exiting...");
         break;
     }
-    //Question 1
+    //Question 1 (Joseph)
     else if (opt == 1)
     {
-
+        using (StreamReader sr = new StreamReader("customers.csv"))
+        {
+            string? s = sr.ReadLine(); 
+            if (s != null)
+            {
+                string[] heading = s.Split(',');
+                Console.WriteLine("{0,-10}  {1,-10}  {2,-10}",
+                    heading[0], heading[1], heading[2]);
+            }
+            while ((s = sr.ReadLine()) != null)
+            {
+                string[] customer = s.Split(',');
+                Console.WriteLine("{0,-10}  {1,-10}  {2,-10}",
+                    customer[0], customer[1], customer[2]);
+            }
+        }
     }
     //Question 2
 
-    //Question 3
+    //Question 3 (Joseph)
 
-    //Question 4
+    //Question 4 (Joseph)
 
     //Question 5
     //Question 6

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace S10257191_PRG2Assignment
 {
@@ -51,9 +52,151 @@ namespace S10257191_PRG2Assignment
             {
             { 1, "Red Velvet" },
             { 2, "Charcoal" },
-            { 3, "Pandan" }
+            { 3, "Pandan" },
+            { 4, "Basic" }
             };
-            void Option1(IceCream modifyingIceCream) { }//To Do
+
+            IceCream Option1(IceCream modifyingIceCream)
+            {
+                int ChangeIceCreamTypeOption = 0;
+                while (true)
+                {
+                    if (modifyingIceCream is Cup)
+                    {
+                        Console.WriteLine(
+                            "You currently have a Cup Ice Cream.\r\n" +
+                            "Options to Change:\r\n" +
+                            "[1] Cone\r\n" +
+                            "[2] Waffle");
+                        Console.Write("Enter your Option: ");
+                        ChangeIceCreamTypeOption = Convert.ToInt16(Console.ReadLine());
+                        while (ChangeIceCreamTypeOption != 1 || ChangeIceCreamTypeOption != 2)
+                        {
+                            Console.WriteLine("Invalid Option.");
+                            Console.Write("Re-enter your Option: ");
+                            ChangeIceCreamTypeOption = Convert.ToInt16(Console.ReadLine());
+                        }
+                        if (ChangeIceCreamTypeOption == 1)
+                        {
+                            bool dip = false;
+                            Console.Write("Do you want a Chocolate Dipped Cone (Y/N): ");
+                            string DippingOption = Console.ReadLine();
+                            while (DippingOption != "Y" || DippingOption != "N")
+                            {
+                                Console.WriteLine("Invlid Option.");
+                                Console.Write("Do you want a Chocolate Dipped Cone(Y / N): ");
+                                DippingOption = Console.ReadLine();
+                            }
+                            if (DippingOption == "Y")
+                            {
+                                dip = true;
+                            }
+                            Cone cone = new Cone("Cone", modifyingIceCream.Scoop, modifyingIceCream.Flavours, modifyingIceCream.Toppings, dip);
+                            return cone;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Waffle Flavour Options:");
+                            foreach(KeyValuePair<int,string> flavour in WaffleFlavourDic)
+                            {
+                                Console.WriteLine($"[{flavour.Key}] {flavour.Value}");
+                            }
+                            Console.Write("Enter your waffle flavour option: ");
+                            int WaffleFlavourOption = Convert.ToInt16(Console.ReadLine());
+                            while (WaffleFlavourOption < 1 || WaffleFlavourOption > WaffleFlavourDic.Count + 1)
+                            {
+                                Console.WriteLine("Invalid Option.");
+                                Console.Write("Re-enter your waffle flavour option: ");
+                                WaffleFlavourOption = Convert.ToInt16(Console.ReadLine());
+                            }
+                            Waffle waffle = new Waffle("Waffle", modifyingIceCream.Scoop, modifyingIceCream.Flavours,modifyingIceCream.Toppings, WaffleFlavourDic[WaffleFlavourOption]);
+                            return waffle;
+                        }
+                    }
+                    else if (modifyingIceCream is Cone)
+                    {
+                        Console.WriteLine(
+                            "You currently have a Cone Ice Cream.\r\n" +
+                            "Options to Change:\r\n" +
+                            "[1] Cup\r\n" +
+                            "[2] Waffle");
+                        Console.Write("Enter your Option: ");
+                        ChangeIceCreamTypeOption = Convert.ToInt16(Console.ReadLine());
+                        while (ChangeIceCreamTypeOption != 1 || ChangeIceCreamTypeOption != 2)
+                        {
+                            Console.WriteLine("Invalid Option.");
+                            Console.Write("Re-enter your Option: ");
+                            ChangeIceCreamTypeOption = Convert.ToInt16(Console.ReadLine());
+                        }
+                        if (ChangeIceCreamTypeOption == 1)
+                        {
+                            Cup cup = new Cup("Cup", modifyingIceCream.Scoop, modifyingIceCream.Flavours, modifyingIceCream.Toppings);
+                            return cup;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Waffle Flavour Options:");
+                            foreach (KeyValuePair<int, string> flavour in WaffleFlavourDic)
+                            {
+                                Console.WriteLine($"[{flavour.Key}] {flavour.Value}");
+                            }
+                            Console.Write("Enter your waffle flavour option: ");
+                            int WaffleFlavourOption = Convert.ToInt16(Console.ReadLine());
+                            while (WaffleFlavourOption < 1 || WaffleFlavourOption > WaffleFlavourDic.Count + 1)
+                            {
+                                Console.WriteLine("Invalid Option.");
+                                Console.Write("Re-enter your waffle flavour option: ");
+                                WaffleFlavourOption = Convert.ToInt16(Console.ReadLine());
+                            }
+                            Waffle waffle = new Waffle("Waffle", modifyingIceCream.Scoop, modifyingIceCream.Flavours, modifyingIceCream.Toppings, WaffleFlavourDic[WaffleFlavourOption]);
+                            return waffle;
+                        }
+
+                    }
+                    else if (modifyingIceCream is Waffle)
+                    {
+                        Console.WriteLine(
+                            "You currently have a Waffle Ice Cream.\r\n" +
+                            "Options to Change:\r\n" +
+                            "[1] Cup\r\n" +
+                            "[2] Cone");
+                        Console.Write("Enter your Option: ");
+                        ChangeIceCreamTypeOption = Convert.ToInt16(Console.ReadLine());
+                        while (ChangeIceCreamTypeOption != 1 || ChangeIceCreamTypeOption != 2)
+                        {
+                            Console.WriteLine("Invalid Option.");
+                            Console.Write("Re-enter your Option: ");
+                            ChangeIceCreamTypeOption = Convert.ToInt16(Console.ReadLine());
+                        }
+                        if (ChangeIceCreamTypeOption == 1)
+                        {
+                            Cup cup = new Cup("Cup", modifyingIceCream.Scoop, modifyingIceCream.Flavours, modifyingIceCream.Toppings);
+                            return cup;
+                        }
+                        else if (ChangeIceCreamTypeOption == 2)
+                        {
+                            bool dip = false;
+                            Console.Write("Do you want a Chocolate Dipped Cone (Y/N): ");
+                            string DippingOption = Console.ReadLine();
+                            while (DippingOption != "Y" || DippingOption != "N")
+                            {
+                                Console.WriteLine("Invlid Option.");
+                                Console.Write("Do you want a Chocolate Dipped Cone(Y / N): ");
+                                DippingOption = Console.ReadLine();
+                            }
+                            if (DippingOption == "Y")
+                            {
+                                dip = true;
+                            }
+                            Cone cone = new Cone("Cone", modifyingIceCream.Scoop, modifyingIceCream.Flavours, modifyingIceCream.Toppings, dip);
+                            return cone;
+                        }
+
+
+                    }
+                }
+                
+            }
 
             void Option2(IceCream modifyingIceCream)
             {
@@ -393,7 +536,7 @@ namespace S10257191_PRG2Assignment
                         switch (ModifyingOption)
                         {
                             case 1:
-                                Option1(modifyingIceCream);
+                                modifyingIceCream = Option1(modifyingIceCream);
                                 break;
                             case 2:
                                 Option2(modifyingIceCream);
@@ -430,7 +573,7 @@ namespace S10257191_PRG2Assignment
                     switch (ModifyingOption)
                     {
                         case 1:
-                            Option1(modifyingCone);
+                            modifyingIceCream = Option1(modifyingIceCream);
                             break;
                         case 2:
                             Option2(modifyingCone);
@@ -465,7 +608,7 @@ namespace S10257191_PRG2Assignment
                     switch (ModifyingOption)
                     {
                         case 1:
-                            Option1(modifyingWaffle);
+                            modifyingIceCream = Option1(modifyingIceCream);
                             break;
                         case 2:
                             Option2(modifyingWaffle);

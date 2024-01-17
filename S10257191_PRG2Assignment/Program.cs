@@ -468,7 +468,8 @@ while (true)
         int custId = Convert.ToInt32(Console.ReadLine());
         if (CustomerDic.ContainsKey(custId))
         {
-
+            Order newOrder = new Order(custId, DateTime.Now);
+            CreateIceCream();
         }
         
     }

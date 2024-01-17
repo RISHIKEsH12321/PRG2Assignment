@@ -29,7 +29,7 @@ namespace S10257191_PRG2Assignment
         /*
         public Order MakeOrder()
         {
-
+            Console.WriteLine("hello");
         }*/
         public bool IsBirthday()
         {

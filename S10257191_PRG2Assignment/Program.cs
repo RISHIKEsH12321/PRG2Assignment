@@ -1,11 +1,33 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using S10257191_PRG2Assignment;
+using System.ComponentModel.Design;
+using System.Linq;
+using System.Runtime.Intrinsics.Arm;
+using System.Transactions;
 
 //==========================================================
 // Student Number : S10241860
 // Student Name : Joseph Kwek Jun Yan
 // Partner Name : Vallimuthu Rishikesh
 //==========================================================
+
+//creating customer dictionary to store information of customers
+Dictionary<int, Customer> CustomerDic = new Dictionary<int, Customer>();
+
+//Create flavor dictionary to store information of the flavors
+Dictionary<string, Flavour> FlavourDic = new Dictionary<string, Flavour>
+{
+    { "Vanilla", new Flavour("Vanilla", false, 0) },
+    { "Chocolate", new Flavour("Chocolate", false, 0) },
+    { "Strawberry", new Flavour("Strawberry", false, 0) },
+    { "Durian", new Flavour("Durian", true, 0) },
+    { "Ube", new Flavour("Ube", true, 0) },
+    { "Sea Salt", new Flavour("Sea salt", true, 0) },
+};
+
+//Call method to read customer.csv to store data in customerDic
+InnitCustomer(CustomerDic);
+//InnitOrders(CustomerDic);
 
 
 void InnitCustomer(Dictionary<int, Customer> cusDic)
@@ -36,6 +58,7 @@ void InnitCustomer(Dictionary<int, Customer> cusDic)
     }
 }
 
+/*
 void InnitOrders(Dictionary<int, Customer> cusDic)
 {
     using (StreamReader sr = new StreamReader("orders.csv"))
@@ -170,7 +193,7 @@ void InnitOrders(Dictionary<int, Customer> cusDic)
         }
     }
 }
-
+*/
 
 void DisplayMenu()
 {
@@ -209,7 +232,7 @@ void ListCustomers()
     }
     Console.WriteLine();
 }
-
+/*
 IceCream CreateIceCream()
 {
     IceCream newIceCream;
@@ -377,13 +400,15 @@ IceCream CreateIceCream()
     }
 
     newIceCream.Scoop = scoops;
-    /*
+    
     if (newIceCream is Cone)
     {
         Console.WriteLine("Do you want your Cone to be Dipped in Chocolate (Y/N): ");
         string reply = Console.ReadLine();
         if (reply == "Y")
         {
+            newIceCream = new Cone();
+            Cone c = (Cone)newIceCream;
             newIceCream.Dipped(true);
         }
         else
@@ -394,41 +419,63 @@ IceCream CreateIceCream()
     else if (newIceCream is Waffle)
     {
 
-    }*/
+    }
 
 
     //Reuturns IceCream
     return newIceCream;
 }
+*/
+
 
 //Creating method for opt 4
 string IceCreamOption()
 {
-    Console.WriteLine("Options" +
+    string option;
+    while (true)
+    {
+        Console.WriteLine("Options" +
         "===============================================\n" +
         "[1] Cone\n" +
         "[2] Waffle\n" +
         "[3] Cup\n" +
         "===============================================\n");
-    Console.Write("Enter your option: ");
-    int num = Convert.ToInt16(Console.ReadLine());
-    if (num == 1)
-    {
-        string option = "Cone"
+        Console.Write("Enter your option: ");
+        try
+        {
+            int num = Convert.ToInt16(Console.ReadLine());
+            if (num == 1)
+            {
+                option = "Cone";
+                break;
+            }
+            else if (num == 2)
+            {
+                option = "Waffle";
+                break;
+            }
+            else if (num == 3)
+            {
+                option = "Cup";
+                break;
+            }
+            else
+            {
+                Console.WriteLine("Enter a valid option!");
+            }
+        }
+        catch (FormatException e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine("Please enter an integer between 1 to 3");
+        }
     }
-    else if (num == 2)
-    {
-        string option = "Waffle"
-    }
-    else if (num == 3)
-    {
-        string option = "Cup"
-    }
-    return option
+    return option;
 }
 
 int IceCreamScoops()
 {
+    int scoops = 0;
     while (true)
     {
         Console.WriteLine("How many scoops do you want?" +
@@ -437,7 +484,7 @@ int IceCreamScoops()
             "2\n" +
             "3\n" +
             "============================\n");
-        int scoops = Convert.ToInt32(Console.ReadLine());
+        scoops = Convert.ToInt32(Console.ReadLine());
         if (scoops > 0 && scoops < 4)
         {
             break;
@@ -447,50 +494,161 @@ int IceCreamScoops()
             Console.WriteLine("Please enter a valid amount scoops (0-3)");
         }
     }
-    return scoops
+    return scoops;
 }
 
-List<Flavour> IceCreamFlavour(List<Flavour> flavours)
+List<Flavour> IceCreamFlavour(int scoops, List<Flavour> flavours)
 {
+    //Display flavours available
     Console.WriteLine("Flavours" +
                       "====================");
     using (StreamReader sr = new StreamReader("flavours.csv"))
     {
-        string? s = sr.ReadLine;
+        string? s = sr.ReadLine();
         if (s != null)
         {
             string[] heading = s.Split(",");
-            Console.WriteLine($"{heading[0,-15]} {heading[1,-5]}")
+            Console.WriteLine($"{heading[0],-15} {heading[1],-5}");
         }
-        while ((s=sr.ReadLine) != null)
+        while ((s=sr.ReadLine()) != null)
         {
             string[] flavArray = s.Split(",");
-            Console.WriteLine($"{flavArray[0, -15]} {flavArray[1, -5]}")
+            Console.WriteLine($"{flavArray[0],-15} {flavArray[1],-5}");
         }
     }
     Console.WriteLine("====================");
 
+    //Ask for input 
+    while (true)
+    {
+        Console.Write("Enter flavour: ");
+        string? flavs = Console.ReadLine();
+        if (scoops == 1) //If user only took 1 scoop for previous input
+        {
+            if (FlavourDic.ContainsKey(flavs)) //Searching for flavour in flavour dictionary
+            {
+                flavours.Add(new Flavour(FlavourDic[flavs].Type, FlavourDic[flavs].Premium, 1)); //Adding to flavour list
+                break;
+            }
+            else
+            {
+                Console.WriteLine("Enter a valid flavour");
+                continue;
+            }
+        }
+        else if (scoops == 2) // If user took 2 scoop for previous input
+        {
+            if (FlavourDic.ContainsKey(flavs))
+            {
+                flavours.Add(new Flavour(FlavourDic[flavs].Type, FlavourDic[flavs].Premium, 1));
+                if (flavours.Count <= 1)
+                    continue;
+                else
+                    break;
+            }
+        }
+        else if (scoops == 3) // If user took 3 scoop for previous input
+        {
+            if (FlavourDic.ContainsKey(flavs))
+            {
+                flavours.Add(new Flavour(FlavourDic[flavs].Type, FlavourDic[flavs].Premium, 1));
+                if (flavours.Count <= 2)
+                    continue;
+                else
+                    break;
+            }
+        }
+    }
+   
 
+    return flavours;
 }
 
-
-//Creating customer dictionary to store information of customers
-Dictionary<int, Customer> CustomerDic = new Dictionary<int, Customer>();
-
-//Create flavor dictionary to store information of the flavors
-Dictionary<string, Flavour> FlavourDic = new Dictionary<string, Flavour>
+List<Topping> IceCreamTopping(List<Topping> toppings)
 {
-    { "Vanilla", new Flavour("Vanilla", false, 0) },
-    { "Chocolate", new Flavour("Chocolate", false, 0) },
-    { "Strawberry", new Flavour("Strawberry", false, 0) },
-    { "Durian", new Flavour("Durian", true, 0) },
-    { "Ube", new Flavour("Ube", true, 0) },
-    { "Sea Salt", new Flavour("Sea salt", true, 0) },
-};
+    //Display toppings available
+    Console.WriteLine("Toppings" +
+                      "====================");
+    using (StreamReader sr = new StreamReader("toppings.csv"))
+    {
+        string? s = sr.ReadLine();
+        if (s != null)
+        {
+            string[] heading = s.Split(",");
+            Console.WriteLine($"{heading[0],-10} {heading[1],-5}");
+        }
+        while ((s = sr.ReadLine()) != null)
+        {
+            string[] topArray = s.Split(",");
+            Console.WriteLine($"{topArray[0],-10} {topArray[1],-5}");
+        }
+    }
+    Console.WriteLine("====================");
 
-//Call method to read customer.csv to store data in customerDic
-InnitCustomer(CustomerDic);
-InnitOrders(CustomerDic);
+    //Ask for input
+    while (true)
+    { 
+        int count = 0;
+        if (count <= 4)
+        {
+            Console.Write("Do you want to add toppings? (Y/N): ");
+            if (Console.ReadLine() == "Y")
+            {
+                Console.Write("Enter your topping: ");
+                string? top = Console.ReadLine();
+                toppings.Add(new Topping(top));
+            }
+            else if(Console.ReadLine() == "N")
+            {
+                break;
+            }
+            else
+            {
+                Console.WriteLine("Invalid input.");
+                Console.WriteLine("Please enter Y for Yes or N for No");
+            } 
+        }
+    }
+    return toppings;
+}
+
+bool IceCreamDip()
+{
+    while (true)
+    {
+        Console.WriteLine("Do you want your Cone to be Dipped in Chocolate (Y/N): ");
+        string reply = Console.ReadLine();
+        if (reply == "Y")
+        {
+            return true;
+        }
+        else if (reply == "N")
+        {
+            return false;
+        }
+        else
+        {
+            Console.WriteLine("Invalid input.");
+            Console.WriteLine("Please enter Y for Yes or N for No.");
+        }
+    }
+}
+
+string WaffleFlav()
+{
+    //Display waffle flavours available
+    Console.WriteLine("Waffle Flavours" +
+                      "====================" +
+                      "$0" +
+                      "Original" +
+                      "+$3" +
+                      "Red Velvet" +
+                      "Charcoal" +
+                      "Pandan Waffle" +
+                      "====================");
+    string waffleFlav = Console.ReadLine();
+    return waffleFlav;
+}
 
 while (true)
 {
@@ -542,11 +700,32 @@ while (true)
         if (CustomerDic.ContainsKey(custId))
         {
             Order newOrder = new Order(custId, DateTime.Now);
-            string opt = IceCreamOption();
+            string option = IceCreamOption();
             int scoops = IceCreamScoops();
             List<Flavour> flavours = new List<Flavour>();
-            flavours = IceCreamFlavour(flavours);
+            flavours = IceCreamFlavour(scoops, flavours);
+            List<Topping> toppings = new List<Topping>();
+            toppings = IceCreamTopping(toppings);
+            if (option == "Cone")
+            {
+                bool dip = IceCreamDip();
+                IceCream newIceCream = new Cone("Cone", scoops, flavours, toppings, dip);
+            }
+
+            else if (option == "Waffle")
+            {
+                string waffleFlav = WaffleFlav();
+                IceCream newIceCream = new Waffle("Cone", scoops, flavours, toppings, waffleFlav);
+            }
+            else
+            {
+                IceCream newIceCream = new Cup("Cup", scoops, flavours, toppings);
+            }
+                
+           
+
         }
+              
         
     }
 

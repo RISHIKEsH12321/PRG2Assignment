@@ -401,6 +401,79 @@ IceCream CreateIceCream()
     return newIceCream;
 }
 
+//Creating method for opt 4
+string IceCreamOption()
+{
+    Console.WriteLine("Options" +
+        "===============================================\n" +
+        "[1] Cone\n" +
+        "[2] Waffle\n" +
+        "[3] Cup\n" +
+        "===============================================\n");
+    Console.Write("Enter your option: ");
+    int num = Convert.ToInt16(Console.ReadLine());
+    if (num == 1)
+    {
+        string option = "Cone"
+    }
+    else if (num == 2)
+    {
+        string option = "Waffle"
+    }
+    else if (num == 3)
+    {
+        string option = "Cup"
+    }
+    return option
+}
+
+int IceCreamScoops()
+{
+    while (true)
+    {
+        Console.WriteLine("How many scoops do you want?" +
+            "============================\n" +
+            "1\n" +
+            "2\n" +
+            "3\n" +
+            "============================\n");
+        int scoops = Convert.ToInt32(Console.ReadLine());
+        if (scoops > 0 && scoops < 4)
+        {
+            break;
+        }
+        else
+        {
+            Console.WriteLine("Please enter a valid amount scoops (0-3)");
+        }
+    }
+    return scoops
+}
+
+List<Flavour> IceCreamFlavour(List<Flavour> flavours)
+{
+    Console.WriteLine("Flavours" +
+                      "====================");
+    using (StreamReader sr = new StreamReader("flavours.csv"))
+    {
+        string? s = sr.ReadLine;
+        if (s != null)
+        {
+            string[] heading = s.Split(",");
+            Console.WriteLine($"{heading[0,-15]} {heading[1,-5]}")
+        }
+        while ((s=sr.ReadLine) != null)
+        {
+            string[] flavArray = s.Split(",");
+            Console.WriteLine($"{flavArray[0, -15]} {flavArray[1, -5]}")
+        }
+    }
+    Console.WriteLine("====================");
+
+
+}
+
+
 //Creating customer dictionary to store information of customers
 Dictionary<int, Customer> CustomerDic = new Dictionary<int, Customer>();
 
@@ -468,7 +541,11 @@ while (true)
         int custId = Convert.ToInt32(Console.ReadLine());
         if (CustomerDic.ContainsKey(custId))
         {
-
+            Order newOrder = new Order(custId, DateTime.Now);
+            string opt = IceCreamOption();
+            int scoops = IceCreamScoops();
+            List<Flavour> flavours = new List<Flavour>();
+            flavours = IceCreamFlavour(flavours);
         }
         
     }

@@ -434,7 +434,7 @@ string IceCreamOption()
     string option;
     while (true)
     {
-        Console.WriteLine("Options" +
+        Console.WriteLine("Options\n" +
         "===============================================\n" +
         "[1] Cone\n" +
         "[2] Waffle\n" +
@@ -478,7 +478,7 @@ int IceCreamScoops()
     int scoops = 0;
     while (true)
     {
-        Console.WriteLine("How many scoops do you want?" +
+        Console.WriteLine("How many scoops do you want?\n" +
             "============================\n" +
             "1\n" +
             "2\n" +
@@ -500,7 +500,7 @@ int IceCreamScoops()
 List<Flavour> IceCreamFlavour(int scoops, List<Flavour> flavours)
 {
     //Display flavours available
-    Console.WriteLine("Flavours" +
+    Console.WriteLine("Flavours\n" +
                       "====================");
     using (StreamReader sr = new StreamReader("flavours.csv"))
     {
@@ -567,7 +567,7 @@ List<Flavour> IceCreamFlavour(int scoops, List<Flavour> flavours)
 List<Topping> IceCreamTopping(List<Topping> toppings)
 {
     //Display toppings available
-    Console.WriteLine("Toppings" +
+    Console.WriteLine("Toppings\n" +
                       "====================");
     using (StreamReader sr = new StreamReader("toppings.csv"))
     {
@@ -592,13 +592,15 @@ List<Topping> IceCreamTopping(List<Topping> toppings)
         if (count <= 4)
         {
             Console.Write("Do you want to add toppings? (Y/N): ");
-            if (Console.ReadLine() == "Y")
+            string ans = Console.ReadLine();
+            if (ans == "Y")
             {
                 Console.Write("Enter your topping: ");
-                string? top = Console.ReadLine();
+                string top = Console.ReadLine();
                 toppings.Add(new Topping(top));
+                count++;
             }
-            else if(Console.ReadLine() == "N")
+            else if (ans == "N")
             {
                 break;
             }
@@ -606,8 +608,10 @@ List<Topping> IceCreamTopping(List<Topping> toppings)
             {
                 Console.WriteLine("Invalid input.");
                 Console.WriteLine("Please enter Y for Yes or N for No");
-            } 
+            }
         }
+        else
+            break;
     }
     return toppings;
 }
@@ -706,6 +710,7 @@ while (true)
             flavours = IceCreamFlavour(scoops, flavours);
             List<Topping> toppings = new List<Topping>();
             toppings = IceCreamTopping(toppings);
+            Console.WriteLine("HEEHEE");
             if (option == "Cone")
             {
                 bool dip = IceCreamDip();

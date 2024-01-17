@@ -1,0 +1,22 @@
+Option,Scoops,Dipped,WaffleFlavour,Cost
+Cup,1,,,4
+Cup,2,,,5.5
+Cup,3,,,6.5
+Cone,1,FALSE,,4
+Cone,1,TRUE,,6
+Cone,2,FALSE,,5.5
+Cone,2,TRUE,,7.5
+Cone,3,FALSE,,6.5
+Cone,3,TRUE,,8.5
+Waffle,1,,Original,7
+Waffle,1,,Red Velvet,10
+Waffle,1,,Charcoal,10
+Waffle,1,,Pandan,10
+Waffle,2,,Original,8.5
+Waffle,2,,Red Velvet,11.5
+Waffle,2,,Charcoal,11.5
+Waffle,2,,Pandan,11.5
+Waffle,3,,Original,9.5
+Waffle,3,,Red Velvet,12.5
+Waffle,3,,Charcoal,12.5
+Waffle,3,,Pandan,12.5

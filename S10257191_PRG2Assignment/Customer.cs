@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-/*
+
 namespace S10257191_PRG2Assignment
 {
     internal class Customer
@@ -13,7 +13,7 @@ namespace S10257191_PRG2Assignment
         public int MemberId { get; set; }
         public DateTime DOB { get; set; }
         public Order CurrentOrder { get; set; }
-        public List<Order> orderHistory { get; set; }
+        public List<Order> OrderHistory { get; set; } = new List<Order>();
         public PointCard Rewards { get; set; }
 
         //Constructor
@@ -26,13 +26,18 @@ namespace S10257191_PRG2Assignment
         }
 
         //Methods
+        /*
         public Order MakeOrder()
         {
 
-        }
+        }*/
         public bool IsBirthday()
         {
-            return true;
+            if (DOB == DateTime.Now)
+            {
+                return true;
+            }
+            else { return false; }
         }
 
         public override string ToString()
@@ -42,4 +47,3 @@ namespace S10257191_PRG2Assignment
 
     }
 }
-*/

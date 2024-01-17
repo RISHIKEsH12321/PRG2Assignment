@@ -25,7 +25,7 @@ void DisplayMenu()
                       "===============================================\n");
 }
 
-void ListCustomers()
+void ListCustomers(Dictionary<int, Customer> custDict)
 {
     using (StreamReader sr = new StreamReader("customers.csv"))
     {
@@ -41,6 +41,8 @@ void ListCustomers()
             string[] customer = s.Split(',');
             Console.WriteLine("{0,-10}  {1,-10}  {2,-10}",
                 customer[0], customer[1], customer[2]);
+            custDict.Add(Convert.ToInt32(customer[1]), new Customer(customer[0],Convert.ToInt32(customer[1]), Convert.ToDateTime(customer[2])));
+            
         }
     }
     Console.WriteLine();
@@ -236,6 +238,9 @@ IceCream CreateIceCream()
     //Reuturns IceCream
     return newIceCream;
 }
+
+Dictionary<int,Customer> custDict = new Dictionary<int,Customer>();
+
 while (true)
 {
     DisplayMenu();
@@ -249,7 +254,7 @@ while (true)
     //Question 1 (Joseph)
     else if (opt == 1)
     {
-        ListCustomers();
+        ListCustomers(custDict);
     }
     //Question 2
 
@@ -265,24 +270,33 @@ while (true)
         DateTime dob = Convert.ToDateTime(Console.ReadLine());
 
         //Storing info in new customer object
-        //Customer newCustomer = new Customer(name,id,dob);
+        Customer newCustomer = new Customer(name,id,dob);
 
         //Creating a new pointcard object 
-        PointCard newCard = new PointCard();
+        PointCard newCard = new PointCard(0,0);
 
         //Appending new data to customers.csv file
         using (StreamWriter sw = new StreamWriter("customers.csv",true))
         {
-            sw.WriteLine(name + "," + id + "," + dob);
+            sw.WriteLine(name + "," + Convert.ToString(id) + "," + dob.ToString("dd/MM/yyyy") + "," + "Ordinary" + "," + newCard.Points + "," + newCard.PunchCard);
         }
         Console.WriteLine("New customer added!");
     }
     //Question 4 (Joseph)
-    ListCustomers();
-    Console.Write("Enter customer Id: ");
-    int custId = Convert.ToInt32(Console.ReadLine());
+    else if (opt == 4)
+    {
+        ListCustomers(custDict);
+        Console.Write("Enter customer Id: ");
+        int custId = Convert.ToInt32(Console.ReadLine());
+        if (custDict.ContainsKey(custId))
+        {
+
+        }
+        
+    }
 
     //Question 5
+    /*
     //Question 6
     else if (opt == 6)
 {
@@ -345,7 +359,7 @@ while (true)
     }
 
 }
-
+*/
     //Advance Question 1
     //Advance Question 2
 

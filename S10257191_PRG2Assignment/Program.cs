@@ -1,193 +1,176 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using S10257191_PRG2Assignment;
 
-Dictionary<int, Customer> CustomerDic = new Dictionary<int, Customer>();
-
-Dictionary<string, Flavour> FlavourDic = new Dictionary<string, Flavour>
-{
-    { "Vanilla", new Flavour("Vanilla", false, 0) },
-    { "Chocolate", new Flavour("Chocolate", false, 0) },
-    { "Strawberry", new Flavour("Strawberry", false, 0) },
-    { "Durian", new Flavour("Durian", true, 0) },
-    { "Ube", new Flavour("Ube", true, 0) },
-    { "Sea Salt", new Flavour("Sea salt", true, 0) },
-};
-
-InnitCustomer(CustomerDic);
-InnitOrders(CustomerDic);
-
-
-            void InnitCustomer(Dictionary<int, Customer> cusDic)
-            {
-                using (StreamReader sr = new StreamReader("customers.csv"))
-                {
-                    string? s = sr.ReadLine(); // read the heading
-
-                    while ((s = sr.ReadLine()) != null)
-                    {
-                        string[] data = s.Split(',');
-                        //Name, MemberId, DOB, MembershipStatus(Tier), MembershipPoints, PunchCard
-                        try
-                        {
-                            int id = Convert.ToInt32(data[1]);
-                            DateTime dob = Convert.ToDateTime(data[2]);
-                            cusDic.Add(id, new Customer(data[0], id, dob));
-                            cusDic[id].Rewards = new PointCard();
-                            cusDic[id].Rewards.Points = Convert.ToInt32(data[4]);
-                            cusDic[id].Rewards.PunchCard = Convert.ToInt32(data[5]);
-                            cusDic[id].Rewards.Tier = data[3];
-                        }
-                        catch 
-                        {
-                            Console.WriteLine("Invalid Data in csv files.");
-                        }
-                    }
-                }
-            }
-
-            void InnitOrders(Dictionary<int, Customer> cusDic)
-            {
-                using (StreamReader sr = new StreamReader("orders.csv"))
-                {
-                    string? s = sr.ReadLine(); // read the heading
-
-                    while ((s = sr.ReadLine()) != null)
-                    {
-                        string?[] data = s.Split(',');
-                        //Id[0], MemberId[1], TimeReceived[2], TimeFulfilled[3], Option[4], Scoops[5],
-                        //Dipped[6], WaffleFlavour[7],
-                        //Flavour1[8], Flavour2[9], Flavour3[10],
-                        //Topping1[11], Topping2[12], Topping3[13], Topping4[14]
-
-                        try
-                        {
-                            int OrderId = Convert.ToInt32(data[0]);
-                            int Memid = Convert.ToInt32(data[1]);
-                            DateTime Recieved = Convert.ToDateTime(data[2]);
-                            DateTime? fulfilled = Convert.ToDateTime(data[3]);
-                            string option = data[4];
-                            int scoops = Convert.ToInt32(data[5]);
-                            //Converted dipped in object creation
-                            string? waffleFlavour = data[7];
-                            Flavour flavour1 = FlavourDic[data[8]];                            
-                            flavour1.Quantity++;
-                            Flavour? flavour2 = null;
-                            Flavour? flavour3 = null;
-                            if (data[9] == "")
-                            {
-                                data[9] = null;
-                            }
-                            if (data[10] == "")
-                            {
-                                data[10] = null;
-                            }
-                            if (data[9] == data[8]) { flavour1.Quantity++;}
-                            else
-                            {
-                                if (flavour2!= null)
-                                {
-                                    flavour2 = FlavourDic[data[9]];
-                                    if (data[10] == flavour2.Type)
-                                    {
-                                        flavour2.Quantity++;
-                                    }
-                                }
-                            }
-                            if (data[10] == data[8]) { flavour1.Quantity++; }
-                            else
-                            {
-                                if (flavour3 != null)
-                                {
-                                    flavour3 = FlavourDic[data[10]];
-                                    flavour3.Quantity++;
-                                }
-                            }
-                            List<Flavour> fList = new List<Flavour>();
-                            fList.Add(flavour1);
-                            if (flavour2 != null)
-                            {
-                                flavour2.Quantity++;
-                                fList.Add(flavour2);
-                            }
-                            if (flavour3 != null)
-                            {
-                                flavour3.Quantity++;
-                                fList.Add(flavour3);
-                            }
-                            List<Topping> tList = new List<Topping>();
-                            for (int i = 11; i < 15; i++)
-                            {
-                                if (data[i] != null)
-                                {
-                                    tList.Add(new Topping(data[i]));
-                                }
-                            }
-                            IceCream ic;
-                            if (option == "Cup")
-                            {
-                                ic = new Cup(option, scoops, fList, tList);
-                            }
-                            else if (option == "Cone")
-                            {
-                                bool dipped = Convert.ToBoolean(data[6]);
-                                ic = new Cone(option, scoops, fList, tList, dipped);
-                            }
-                            else
-                            {
-                                ic = new Waffle(option, scoops, fList, tList, waffleFlavour);
-                            }
-
-                            if (fulfilled == null)
-                            {
-                                Order cOrder = new Order(OrderId, Recieved);
-                                
-                                if (cusDic[Memid].CurrentOrder.Id == OrderId)
-                                {
-                                    cusDic[Memid].CurrentOrder.IceCreamList.Add(ic);
-                                }
-                                else
-                                {
-                                    cusDic[Memid].CurrentOrder = cOrder;
-                                    cOrder.IceCreamList.Add(ic);
-                                }
-                            }
-                            else
-                            {
-                                Order pOrder = new Order(OrderId, Recieved);
-                                bool check = true;
-                                foreach (Order order in cusDic[Memid].orderHistory)
-                                {
-                                    if (order.Id == OrderId)
-                                    {
-                                        order.IceCreamList.Add(ic);
-                                        check = false;
-                                        break;
-                                    }
-                                }
-                                if (check)
-                                {
-                                    pOrder.IceCreamList.Add(ic);
-                                    cusDic[Memid].orderHistory.Add(pOrder);
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.Message);
-                            
-                        }
-                    }
-                }
-            }
-
-
-
-Console.WriteLine("Hello, World!");
 //==========================================================
 // Student Number : S10241860
 // Student Name : Joseph Kwek Jun Yan
 // Partner Name : Vallimuthu Rishikesh
 //==========================================================
+
+
+void InnitCustomer(Dictionary<int, Customer> cusDic)
+{
+    using (StreamReader sr = new StreamReader("customers.csv"))
+    {
+        string? s = sr.ReadLine(); // read the heading
+
+        while ((s = sr.ReadLine()) != null)
+        {
+            string[] data = s.Split(',');
+            //Name, MemberId, DOB, MembershipStatus(Tier), MembershipPoints, PunchCard
+            try
+            {
+                int id = Convert.ToInt32(data[1]);
+                DateTime dob = Convert.ToDateTime(data[2]);
+                cusDic.Add(id, new Customer(data[0], id, dob));
+                cusDic[id].Rewards = new PointCard();
+                cusDic[id].Rewards.Points = Convert.ToInt32(data[4]);
+                cusDic[id].Rewards.PunchCard = Convert.ToInt32(data[5]);
+                cusDic[id].Rewards.Tier = data[3];
+            }
+            catch
+            {
+                Console.WriteLine("Invalid Data in csv files.");
+            }
+        }
+    }
+}
+
+void InnitOrders(Dictionary<int, Customer> cusDic)
+{
+    using (StreamReader sr = new StreamReader("orders.csv"))
+    {
+        string? s = sr.ReadLine(); // read the heading
+
+        while ((s = sr.ReadLine()) != null)
+        {
+            string?[] data = s.Split(',');
+            //Id[0], MemberId[1], TimeReceived[2], TimeFulfilled[3], Option[4], Scoops[5],
+            //Dipped[6], WaffleFlavour[7],
+            //Flavour1[8], Flavour2[9], Flavour3[10],
+            //Topping1[11], Topping2[12], Topping3[13], Topping4[14]
+
+            try
+            {
+                int OrderId = Convert.ToInt32(data[0]);
+                int Memid = Convert.ToInt32(data[1]);
+                DateTime Recieved = Convert.ToDateTime(data[2]);
+                DateTime? fulfilled = Convert.ToDateTime(data[3]);
+                string option = data[4];
+                int scoops = Convert.ToInt32(data[5]);
+                //Converted dipped in object creation
+                string? waffleFlavour = data[7];
+                Flavour flavour1 = FlavourDic[data[8]];
+                flavour1.Quantity++;
+                Flavour? flavour2 = null;
+                Flavour? flavour3 = null;
+                if (data[9] == "")
+                {
+                    data[9] = null;
+                }
+                if (data[10] == "")
+                {
+                    data[10] = null;
+                }
+                if (data[9] == data[8]) { flavour1.Quantity++; }
+                else
+                {
+                    if (flavour2 != null)
+                    {
+                        flavour2 = FlavourDic[data[9]];
+                        if (data[10] == flavour2.Type)
+                        {
+                            flavour2.Quantity++;
+                        }
+                    }
+                }
+                if (data[10] == data[8]) { flavour1.Quantity++; }
+                else
+                {
+                    if (flavour3 != null)
+                    {
+                        flavour3 = FlavourDic[data[10]];
+                        flavour3.Quantity++;
+                    }
+                }
+                List<Flavour> fList = new List<Flavour>();
+                fList.Add(flavour1);
+                if (flavour2 != null)
+                {
+                    flavour2.Quantity++;
+                    fList.Add(flavour2);
+                }
+                if (flavour3 != null)
+                {
+                    flavour3.Quantity++;
+                    fList.Add(flavour3);
+                }
+                List<Topping> tList = new List<Topping>();
+                for (int i = 11; i < 15; i++)
+                {
+                    if (data[i] != null)
+                    {
+                        tList.Add(new Topping(data[i]));
+                    }
+                }
+                IceCream ic;
+                if (option == "Cup")
+                {
+                    ic = new Cup(option, scoops, fList, tList);
+                }
+                else if (option == "Cone")
+                {
+                    bool dipped = Convert.ToBoolean(data[6]);
+                    ic = new Cone(option, scoops, fList, tList, dipped);
+                }
+                else
+                {
+                    ic = new Waffle(option, scoops, fList, tList, waffleFlavour);
+                }
+
+                if (fulfilled == null)
+                {
+                    Order cOrder = new Order(OrderId, Recieved);
+
+                    if (cusDic[Memid].CurrentOrder.Id == OrderId)
+                    {
+                        cusDic[Memid].CurrentOrder.IceCreamList.Add(ic);
+                    }
+                    else
+                    {
+                        cusDic[Memid].CurrentOrder = cOrder;
+                        cOrder.IceCreamList.Add(ic);
+                    }
+                }
+                else
+                {
+                    Order pOrder = new Order(OrderId, Recieved);
+                    bool check = true;
+                    foreach (Order order in cusDic[Memid].orderHistory)
+                    {
+                        if (order.Id == OrderId)
+                        {
+                            order.IceCreamList.Add(ic);
+                            check = false;
+                            break;
+                        }
+                    }
+                    if (check)
+                    {
+                        pOrder.IceCreamList.Add(ic);
+                        cusDic[Memid].orderHistory.Add(pOrder);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+
+            }
+        }
+    }
+}
+
 
 void DisplayMenu()
 {
@@ -206,7 +189,7 @@ void DisplayMenu()
                       "===============================================\n");
 }
 
-void ListCustomers(Dictionary<int, Customer> custDict)
+void ListCustomers()
 {
     using (StreamReader sr = new StreamReader("customers.csv"))
     {
@@ -222,8 +205,6 @@ void ListCustomers(Dictionary<int, Customer> custDict)
             string[] customer = s.Split(',');
             Console.WriteLine("{0,-10}  {1,-10}  {2,-10}",
                 customer[0], customer[1], customer[2]);
-            custDict.Add(Convert.ToInt32(customer[1]), new Customer(customer[0],Convert.ToInt32(customer[1]), Convert.ToDateTime(customer[2])));
-            
         }
     }
     Console.WriteLine();
@@ -420,7 +401,23 @@ IceCream CreateIceCream()
     return newIceCream;
 }
 
-Dictionary<int,Customer> custDict = new Dictionary<int,Customer>();
+//Creating customer dictionary to store information of customers
+Dictionary<int, Customer> CustomerDic = new Dictionary<int, Customer>();
+
+//Create flavor dictionary to store information of the flavors
+Dictionary<string, Flavour> FlavourDic = new Dictionary<string, Flavour>
+{
+    { "Vanilla", new Flavour("Vanilla", false, 0) },
+    { "Chocolate", new Flavour("Chocolate", false, 0) },
+    { "Strawberry", new Flavour("Strawberry", false, 0) },
+    { "Durian", new Flavour("Durian", true, 0) },
+    { "Ube", new Flavour("Ube", true, 0) },
+    { "Sea Salt", new Flavour("Sea salt", true, 0) },
+};
+
+//Call method to read customer.csv to store data in customerDic
+InnitCustomer(CustomerDic);
+InnitOrders(CustomerDic);
 
 while (true)
 {
@@ -435,7 +432,7 @@ while (true)
     //Question 1 (Joseph)
     else if (opt == 1)
     {
-        ListCustomers(custDict);
+        ListCustomers();
     }
     //Question 2
 
@@ -466,10 +463,10 @@ while (true)
     //Question 4 (Joseph)
     else if (opt == 4)
     {
-        ListCustomers(custDict);
+        ListCustomers();
         Console.Write("Enter customer Id: ");
         int custId = Convert.ToInt32(Console.ReadLine());
-        if (custDict.ContainsKey(custId))
+        if (CustomerDic.ContainsKey(custId))
         {
 
         }

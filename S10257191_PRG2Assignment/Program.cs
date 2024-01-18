@@ -481,7 +481,7 @@ string IceCreamOption()
     string option;
     while (true)
     {
-        Console.WriteLine("Options" +
+        Console.WriteLine("Options\n" +
         "===============================================\n" +
         "[1] Cone\n" +
         "[2] Waffle\n" +
@@ -525,11 +525,11 @@ int IceCreamScoops()
     int scoops = 0;
     while (true)
     {
-        Console.WriteLine("How many scoops do you want?" +
+        Console.WriteLine("How many scoops do you want?\n" +
             "============================\n" +
-            "1\n" +
-            "2\n" +
-            "3\n" +
+            "1 scoop\n" +
+            "2 scoops\n" +
+            "3 scoops\n" +
             "============================\n");
         scoops = Convert.ToInt32(Console.ReadLine());
         if (scoops > 0 && scoops < 4)
@@ -547,7 +547,7 @@ int IceCreamScoops()
 List<Flavour> IceCreamFlavour(int scoops, List<Flavour> flavours)
 {
     //Display flavours available
-    Console.WriteLine("Flavours" +
+    Console.WriteLine("Flavours\n" +
                       "====================");
     using (StreamReader sr = new StreamReader("flavours.csv"))
     {
@@ -614,7 +614,7 @@ List<Flavour> IceCreamFlavour(int scoops, List<Flavour> flavours)
 List<Topping> IceCreamTopping(List<Topping> toppings)
 {
     //Display toppings available
-    Console.WriteLine("Toppings" +
+    Console.WriteLine("Toppings\n" +
                       "====================");
     using (StreamReader sr = new StreamReader("toppings.csv"))
     {
@@ -639,13 +639,15 @@ List<Topping> IceCreamTopping(List<Topping> toppings)
         if (count <= 4)
         {
             Console.Write("Do you want to add toppings? (Y/N): ");
-            if (Console.ReadLine() == "Y")
+            string ans = Console.ReadLine();
+            if (ans == "Y")
             {
                 Console.Write("Enter your topping: ");
-                string? top = Console.ReadLine();
+                string top = Console.ReadLine();
                 toppings.Add(new Topping(top));
+                count++;
             }
-            else if(Console.ReadLine() == "N")
+            else if (ans == "N")
             {
                 break;
             }
@@ -653,8 +655,10 @@ List<Topping> IceCreamTopping(List<Topping> toppings)
             {
                 Console.WriteLine("Invalid input.");
                 Console.WriteLine("Please enter Y for Yes or N for No");
-            } 
+            }
         }
+        else
+            break;
     }
     return toppings;
 }
@@ -768,35 +772,75 @@ while (true)
         ListCustomers();
         Console.Write("Enter customer Id: ");
         int custId = Convert.ToInt32(Console.ReadLine());
+
         if (CustomerDic.ContainsKey(custId))
         {
-            Order newOrder = new Order(custId, DateTime.Now);
-            string option = IceCreamOption();
-            int scoops = IceCreamScoops();
-            List<Flavour> flavours = new List<Flavour>();
-            flavours = IceCreamFlavour(scoops, flavours);
-            List<Topping> toppings = new List<Topping>();
-            toppings = IceCreamTopping(toppings);
-            if (option == "Cone")
+            while (true)
             {
-                bool dip = IceCreamDip();
-                IceCream newIceCream = new Cone("Cone", scoops, flavours, toppings, dip);
-            }
+                Order newOrder = new Order(custId, DateTime.Now); //Creating a new order
+                //Getting input to make ice cream
+                string option = IceCreamOption();
+                int scoops = IceCreamScoops();
+                List<Flavour> flavours = new List<Flavour>();
+                flavours = IceCreamFlavour(scoops, flavours);
+                List<Topping> toppings = new List<Topping>();
+                toppings = IceCreamTopping(toppings);
+                //Checking ice cream type
+                if (option == "Cone")
+                {
+                    bool dip = IceCreamDip();
+                    IceCream newIceCream = new Cone("Cone", scoops, flavours, toppings, dip);
+                    newOrder.AddIceCream(newIceCream);                                      //Adding ice cream to order
+                    Console.Write("Would you like to add another ice cream order? (Y/N): ");//Asking user if they make to make another ice cream
+                    string ans = Console.ReadLine();
+                    if (ans == "Y")
+                    {
+                        continue;
+                    }
+                    else if (ans == "N")
+                    {
+                        CustomerDic[custId].CurrentOrder = newOrder;
+                        break;
+                    }
+                }
 
-            else if (option == "Waffle")
-            {
-                string waffleFlav = WaffleFlav();
-                IceCream newIceCream = new Waffle("Cone", scoops, flavours, toppings, waffleFlav);
+                else if (option == "Waffle")
+                {
+                    string waffleFlav = WaffleFlav();
+                    IceCream newIceCream = new Waffle("Cone", scoops, flavours, toppings, waffleFlav);
+                    newOrder.AddIceCream(newIceCream);                                      //Adding ice cream to order
+                    Console.Write("Would you like to add another ice cream order? (Y/N): ");//Asking user if they make to make another ice cream
+                    string ans = Console.ReadLine();
+                    if (ans == "Y")
+                    {
+                        continue;
+                    }
+                    else if (ans == "N")
+                    {
+                        CustomerDic[custId].CurrentOrder = newOrder;
+                        break;
+                    }
+                }
+                else
+                {
+                    IceCream newIceCream = new Cup("Cup", scoops, flavours, toppings);
+                    newOrder.AddIceCream(newIceCream);                                      //Adding ice cream to order
+                    Console.Write("Would you like to add another ice cream order? (Y/N): ");//Asking user if they make to make another ice cream
+                    string ans = Console.ReadLine();
+                    if (ans == "Y")
+                    {
+                        continue;
+                    }
+                    else if (ans == "N")
+                    {
+                        CustomerDic[custId].CurrentOrder = newOrder;
+                        break;
+                    }
+                }
             }
-            else
-            {
-                IceCream newIceCream = new Cup("Cup", scoops, flavours, toppings);
-            }
-                
-           
-
+            Console.WriteLine("Order added successfully!");  
         }
-              
+
         
     }
 

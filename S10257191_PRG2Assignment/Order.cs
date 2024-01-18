@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Reflection.PortableExecutable;
 using System.Text;
@@ -20,14 +21,13 @@ namespace S10257191_PRG2Assignment
         public DateTime? TimeFulfilled { get; set; }
 
         public List<IceCream> IceCreamList { get; set; }
-
+        = new List<IceCream>();
         public Order() { }
 
         public Order(int id, DateTime recieved)
         {
             Id = id;
             TimeRecieved = recieved;
-            IceCreamList = new List<IceCream>();
         }
 
         public void ModifyIceCream(int id)
@@ -637,6 +637,27 @@ namespace S10257191_PRG2Assignment
             id--;
             IceCreamList.RemoveAt(id);
 
+        }
+
+        public double CalculateTotal()
+        {
+            double total = 0;
+            foreach (IceCream iceCream in IceCreamList)
+            {
+                total += iceCream.CalculatePrice();
+            }
+            return total;
+        }
+        public override string ToString()
+        {
+            string result = $"\nID: {Id,-5}\nTime Recieved: {TimeRecieved}\nTime Fulfilled: {TimeFulfilled}" +
+                $"\nIce Cream(s):\n";
+            foreach (IceCream ic in IceCreamList)
+            {
+                result += $"{ic}\n";
+            }
+            result += $"Total: {CalculateTotal(): 0.00}";
+            return result;
         }
     }
 }

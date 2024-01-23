@@ -23,6 +23,7 @@ namespace S10257191_PRG2Assignment
             Name = name;
             MemberId = memberId;
             DOB = dob;
+            orderHistory = new List<Order>();
         }
 
         //Methods

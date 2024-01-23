@@ -15,6 +15,8 @@ using System.Transactions;
 Dictionary<int, Customer> CustomerDic = new Dictionary<int, Customer>();
 
 //Create flavor dictionary to store information of the flavors
+Dictionary<int, Customer> CustomerDic = new Dictionary<int, Customer>();
+
 Dictionary<string, Flavour> FlavourDic = new Dictionary<string, Flavour>
 {
     { "Vanilla", new Flavour("Vanilla", false, 0) },
@@ -25,10 +27,8 @@ Dictionary<string, Flavour> FlavourDic = new Dictionary<string, Flavour>
     { "Sea Salt", new Flavour("Sea salt", true, 0) },
 };
 
-//Call method to read customer.csv to store data in customerDic
 InnitCustomer(CustomerDic);
-//InnitOrders(CustomerDic);
-
+InnitOrders(CustomerDic);
 
 void InnitCustomer(Dictionary<int, Customer> cusDic)
 {
@@ -57,8 +57,6 @@ void InnitCustomer(Dictionary<int, Customer> cusDic)
         }
     }
 }
-
-/*
 void InnitOrders(Dictionary<int, Customer> cusDic)
 {
     using (StreamReader sr = new StreamReader("orders.csv"))
@@ -78,7 +76,16 @@ void InnitOrders(Dictionary<int, Customer> cusDic)
                 int OrderId = Convert.ToInt32(data[0]);
                 int Memid = Convert.ToInt32(data[1]);
                 DateTime Recieved = Convert.ToDateTime(data[2]);
-                DateTime? fulfilled = Convert.ToDateTime(data[3]);
+                DateTime? fulfilled;
+                if (data[3] == "")
+                {
+                    fulfilled = null;
+                }
+                else
+                {
+                    fulfilled = Convert.ToDateTime(data[3]);
+                }
+
                 string option = data[4];
                 int scoops = Convert.ToInt32(data[5]);
                 //Converted dipped in object creation
@@ -131,7 +138,7 @@ void InnitOrders(Dictionary<int, Customer> cusDic)
                 List<Topping> tList = new List<Topping>();
                 for (int i = 11; i < 15; i++)
                 {
-                    if (data[i] != null)
+                    if (data[i] != "")
                     {
                         tList.Add(new Topping(data[i]));
                     }
@@ -150,11 +157,13 @@ void InnitOrders(Dictionary<int, Customer> cusDic)
                 {
                     ic = new Waffle(option, scoops, fList, tList, waffleFlavour);
                 }
+                Console.WriteLine(data[0]);
 
                 if (fulfilled == null)
                 {
                     Order cOrder = new Order(OrderId, Recieved);
-
+                    cusDic[Memid].CurrentOrder = new Order(OrderId, Recieved);
+                    Console.WriteLine(1);
                     if (cusDic[Memid].CurrentOrder.Id == OrderId)
                     {
                         cusDic[Memid].CurrentOrder.IceCreamList.Add(ic);
@@ -168,6 +177,7 @@ void InnitOrders(Dictionary<int, Customer> cusDic)
                 else
                 {
                     Order pOrder = new Order(OrderId, Recieved);
+                    pOrder.TimeFulfilled = fulfilled;
                     bool check = true;
                     foreach (Order order in cusDic[Memid].orderHistory)
                     {
@@ -183,17 +193,18 @@ void InnitOrders(Dictionary<int, Customer> cusDic)
                         pOrder.IceCreamList.Add(ic);
                         cusDic[Memid].orderHistory.Add(pOrder);
                     }
+
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine(123);
                 Console.WriteLine(ex.Message);
-
+                Console.WriteLine(123);
             }
         }
     }
 }
-*/
 
 void DisplayMenu()
 {
@@ -250,7 +261,7 @@ IceCream CreateIceCream()
                     int OptionOption = Convert.ToInt16(Console.ReadLine());
                     if (OptionOption == 1)
                     {
-                        
+
                         Cup newIceCream = new Cup();
                         ScoopFlavour(newIceCream);
                         IceCreamTopping(newIceCream);
@@ -283,7 +294,7 @@ IceCream CreateIceCream()
             {
                 Console.WriteLine(ex.Message);
             }
-        }                    
+        }
     }
 
     //Creating the Falvour
@@ -367,7 +378,6 @@ IceCream CreateIceCream()
         }
         newIceCream.Scoop = scoops;
     }
-    
 
     //Creating the Toppings
     void IceCreamTopping(IceCream newIceCream)
@@ -416,7 +426,7 @@ IceCream CreateIceCream()
             }
         }
     }
-    
+
     void ConeDipped(Cone newIceCream)
     {
         Console.WriteLine("Do you want your Cone to be Dipped in Chocolate (Y/N): ");
@@ -430,7 +440,7 @@ IceCream CreateIceCream()
             newIceCream.Dipped = false;
         }
     }
-    
+
     void WaffleFlavour(Waffle newIceCream)
     {
         Dictionary<int, string> waffleFalvourDic = new Dictionary<int, string>
@@ -462,7 +472,7 @@ IceCream CreateIceCream()
                 newIceCream.WaffleFlavour = waffleFalvourDic[WaffleFlavourOption];
                 break;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -473,7 +483,6 @@ IceCream CreateIceCream()
     //Reuturns IceCream
     return newIceCream;
 }
-
 
 //Creating method for opt 4
 string IceCreamOption()
@@ -873,7 +882,7 @@ while (true)
     //Question 6
     else if (opt == 6)
 {
-    foreach (KeyValuePair<int,Customer> customer in CustomerDic)
+    foreach (KeyValuePair<int, Customer> customer in CustomerDic)
     {
         Console.WriteLine($"{customer.Value.MemberId}: {customer.Value.Name}");
     }
@@ -888,63 +897,71 @@ while (true)
         id = Convert.ToInt32(Console.ReadLine());
     }
 
-    Order CurrentOrder = CustomerDic[id].CurrentOrder;
-
-
-    Console.WriteLine(
-        "Modify Order Details:\r\n" +
-        "[1] Choose Ice Cream to Modify\r\n" +
-        "[2] Add New Ice Cream\r\n" +
-        "[3] Remove Ice Cream from your Order");
-    
-    int Option6Option;
-
-    while (true)
+    if (!(CustomerDic[id].CurrentOrder == null))
     {
-        try
+        Order CurrentOrder = CustomerDic[id].CurrentOrder;
+
+
+        Console.WriteLine(
+            "Modify Order Details:\r\n" +
+            "[1] Choose Ice Cream to Modify\r\n" +
+            "[2] Add New Ice Cream\r\n" +
+            "[3] Remove Ice Cream from your Order");
+
+        int Option6Option;
+
+        while (true)
         {
-            Console.Write("Enter your option (option 6): ");
-            Option6Option = Convert.ToInt32(Console.ReadLine());
-            while (Option6Option != 1 && Option6Option != 2 && Option6Option != 3)
+            try
             {
-                Console.WriteLine("Invlid Option");
-                Console.Write("Re-enter your option: ");
+                Console.Write("Enter your option (option 6): ");
                 Option6Option = Convert.ToInt32(Console.ReadLine());
+                while (Option6Option != 1 && Option6Option != 2 && Option6Option != 3)
+                {
+                    Console.WriteLine("Invlid Option");
+                    Console.Write("Re-enter your option: ");
+                    Option6Option = Convert.ToInt32(Console.ReadLine());
+                }
+                switch (Option6Option)
+                {
+                    case 1:
+                        foreach (IceCream ic in CurrentOrder.IceCreamList)
+                        {
+                            Console.WriteLine(ic);
+                        }
+                        Console.Write("Enter which Ice Cream you want to change: ");
+                        int ChangeIceCreamID = Convert.ToInt16(Console.ReadLine());
+                        CurrentOrder.ModifyIceCream(ChangeIceCreamID);
+                        break;
+                    case 2:
+                        IceCream NewIceCream = CreateIceCream();
+                        CurrentOrder.AddIceCream(NewIceCream);
+                        break;
+
+                    case 3:
+                        foreach (IceCream ic in CurrentOrder.IceCreamList)
+                        {
+                            Console.WriteLine(ic);
+                        }
+                        Console.Write("Enter which Ice Cream you want to Delete: ");
+                        int DeleteIceCreamID = Convert.ToInt16(Console.ReadLine());
+                        CurrentOrder.DeleteIceCream(DeleteIceCreamID);
+                        break;
+                }
+                break;
             }
-            switch (Option6Option)
+            catch (Exception ex)
             {
-                case 1:
-                    foreach (IceCream ic in CurrentOrder.IceCreamList)
-                    {
-                        Console.WriteLine(ic);
-                    }
-                    Console.Write("Enter which Ice Cream you want to change: ");
-                    int ChangeIceCreamID = Convert.ToInt16(Console.ReadLine());
-                    CurrentOrder.ModifyIceCream(ChangeIceCreamID);
-                    break;
-                case 2:
-                    IceCream NewIceCream = CreateIceCream();
-                    CurrentOrder.AddIceCream(NewIceCream);
-                    break;
-
-                case 3:
-                    foreach (IceCream ic in CurrentOrder.IceCreamList)
-                    {
-                        Console.WriteLine(ic);
-                    }
-                    Console.Write("Enter which Ice Cream you want to Delete: ");
-                    int DeleteIceCreamID = Convert.ToInt16(Console.ReadLine());
-                    CurrentOrder.DeleteIceCream(DeleteIceCreamID);
-                    break;
+                Console.WriteLine(ex.Message);
             }
-            break;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
 
+        }
     }
+    else
+    {
+        Console.WriteLine("You do not have an order to modify. Place an order first.");
+    }
+
 
 }
     //Advance Question 1

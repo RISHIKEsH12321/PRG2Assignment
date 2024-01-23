@@ -16,8 +16,9 @@ namespace S10257191_PRG2Assignment
         public string Option { get; set; }
         public int Scoop { get; set; }
         public List<Flavour> Flavours { get; set; }
+        = new List<Flavour>();
         public List<Topping> Toppings { get; set; }
-
+        = new List<Topping>();
 
         public IceCream() { }
 
@@ -25,15 +26,26 @@ namespace S10257191_PRG2Assignment
         {
             Option = option;
             Scoop = scoop;
-            Flavours = flavours;
-            Toppings = toppings;
         }
 
         public abstract double CalculatePrice();
 
         public override string ToString()
         {
-            return $"{Option} {Scoop} {Flavours} {Toppings}";
+            string result = $"Option: {Option} \nNumber of Scoops: {Scoop}\nFlavours: \n";
+            foreach (Flavour flavour in Flavours)
+            {
+                result += $"{flavour.Type}\n";
+            }
+            if (Toppings.Count > 0)
+            {
+                result += "Toppings:\n";
+                foreach (Topping topping in Toppings)
+                {
+                    result += $"{topping.Type}\n";
+                }
+            }
+            return result;
         }
     }
 
@@ -41,10 +53,10 @@ namespace S10257191_PRG2Assignment
     {
         public Cup() { }
 
-        public Cup(string option, int scoops, List<Flavour> flavours, List<Topping> toppings) 
+        public Cup(string option, int scoops, List<Flavour> flavours, List<Topping> toppings)
             : base(option, scoops, flavours, toppings)
         {
-            Option = "1";
+            Option = "Cup";
         }
 
         public override double CalculatePrice()
@@ -96,7 +108,7 @@ namespace S10257191_PRG2Assignment
             : base(option, scoops, flavours, toppings)
         {
             Dipped = dip;
-            Option = "2";
+            Option = "Cone";
         }
 
         public override double CalculatePrice()
@@ -134,7 +146,7 @@ namespace S10257191_PRG2Assignment
 
         public override string ToString()
         {
-            return base.ToString();
+            return $"{base.ToString()}Dipped: {dipped}\n";
         }
     }
 
@@ -150,7 +162,7 @@ namespace S10257191_PRG2Assignment
             : base(option, scoops, flavours, toppings)
         {
             WaffleFlavour = waffle;
-            Option = "3";
+            Option = "Waffle";
         }
 
         public override double CalculatePrice()
@@ -172,7 +184,7 @@ namespace S10257191_PRG2Assignment
 
             if (WaffleFlavour == "Red velvet" || WaffleFlavour == "Charcoal" || WaffleFlavour == "Pandan") 
             { total += 3; }
-
+            else { waffleFlavour = "Basic"; }
 
             foreach (Flavour flavour in Flavours)
             {
@@ -189,7 +201,7 @@ namespace S10257191_PRG2Assignment
 
         public override string ToString()
         {
-            return base.ToString();
+            return $"{base.ToString()}Waffle Falvour: {WaffleFlavour}";
         }
 
     }

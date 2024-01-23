@@ -15,8 +15,6 @@ using System.Transactions;
 Dictionary<int, Customer> CustomerDic = new Dictionary<int, Customer>();
 
 //Create flavor dictionary to store information of the flavors
-Dictionary<int, Customer> CustomerDic = new Dictionary<int, Customer>();
-
 Dictionary<string, Flavour> FlavourDic = new Dictionary<string, Flavour>
 {
     { "Vanilla", new Flavour("Vanilla", false, 0) },

@@ -23,15 +23,17 @@ namespace S10257191_PRG2Assignment
             Name = name;
             MemberId = memberId;
             DOB = dob;
-            orderHistory = new List<Order>();
+            OrderHistory = new List<Order>();
         }
 
         //Methods
-        /*
+        
         public Order MakeOrder()
         {
-            Console.WriteLine("hello");
-        }*/
+            Order newOrder = new Order();
+            CurrentOrder = newOrder;
+            return newOrder;
+        }
         public bool IsBirthday()
         {
             if (DOB == DateTime.Now)

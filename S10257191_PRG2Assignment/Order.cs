@@ -604,6 +604,7 @@ namespace S10257191_PRG2Assignment
                     break;
                 }
             }
+            IceCreamList[id] = modifyingIceCream;
         }
 
         public void AddIceCream(IceCream iceCream)

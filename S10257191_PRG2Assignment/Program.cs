@@ -492,8 +492,7 @@ IceCream CreateIceCream()
 while (true)
 {
     DisplayMenu();
-    Console.Write("Enter your option: ");
-    int opt = Convert.ToInt32(Console.ReadLine());
+    int opt = DataValidationInt("Enter your option: ", new List<int> { 1, 2, 3, 4, 5, 6 }); 
     if (opt == 0)
     {
         Console.WriteLine("Exiting...");

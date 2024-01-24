@@ -204,7 +204,30 @@ void InnitOrders(Dictionary<int, Customer> cusDic)
         }
     }
 }
-
+int DataValidationInt(string prompt, List<int> listOfValues)
+{
+    int option;
+    while (true)
+    {
+        try
+        {
+            Console.Write(prompt);
+            option = Convert.ToInt32(Console.ReadLine());
+            while (!(listOfValues.Contains(option)))
+            {
+                Console.WriteLine("Invalid Input.");
+                Console.Write(prompt);
+                option = Convert.ToInt32(Console.ReadLine());
+            }
+            break;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+    return option;
+}
 void DisplayMenu()
 {
     Console.WriteLine("Ice Cream Shop Management System");
@@ -242,7 +265,6 @@ void ListCustomers()
     }
     Console.WriteLine();
 }
-
 IceCream CreateIceCream()
 {
     //Creates IceCream object based on Option 
@@ -250,43 +272,37 @@ IceCream CreateIceCream()
     {
         Console.WriteLine("Enter the option of the type of Ice Cream you want:");
         Console.WriteLine("[1] Cup\r\n[2] Cone\r\n[3] Waffle");
+        List<int> IceCreamOption = new List<int>() { 1, 2, 3 };
+
         while (true)
         {
             try
             {
-                while (true)
+                int OptionOption = DataValidationInt("Enter your Option Number: ", IceCreamOption);
+                if (OptionOption == 1)
                 {
-                    Console.Write("Enter your Option Number: ");
-                    int OptionOption = Convert.ToInt16(Console.ReadLine());
-                    if (OptionOption == 1)
-                    {
 
-                        Cup newIceCream = new Cup();
-                        ScoopFlavour(newIceCream);
-                        IceCreamTopping(newIceCream);
-                        return newIceCream;
+                    Cup newIceCream = new Cup();
 
-                    }
-                    else if (OptionOption == 2)
-                    {
-                        Cone newIceCream = new Cone();
-                        ScoopFlavour(newIceCream);
-                        IceCreamTopping(newIceCream);
-                        ConeDipped(newIceCream);
-                        return newIceCream;
-                    }
-                    else if (OptionOption == 3)
-                    {
-                        Waffle newIceCream = new Waffle();
-                        ScoopFlavour(newIceCream);
-                        IceCreamTopping(newIceCream);
-                        WaffleFlavour(newIceCream);
-                        return newIceCream;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invliad Option.");
-                    }
+                    ScoopFlavour(newIceCream);
+                    IceCreamTopping(newIceCream);
+                    return newIceCream;
+                }
+                else if (OptionOption == 2)
+                {
+                    Cone newIceCream = new Cone();
+                    ScoopFlavour(newIceCream);
+                    IceCreamTopping(newIceCream);
+                    ConeDipped(newIceCream);
+                    return newIceCream;
+                }
+                else if (OptionOption == 3)
+                {
+                    Waffle newIceCream = new Waffle();
+                    ScoopFlavour(newIceCream);
+                    IceCreamTopping(newIceCream);
+                    WaffleFlavour(newIceCream);
+                    return newIceCream;
                 }
             }
             catch (Exception ex)
@@ -317,37 +333,35 @@ IceCream CreateIceCream()
                 "\r\n[5] Ube" +
                 "\r\n[6] Sea Salt"
                 );
-
             while (true)
             {
                 try
                 {
-                    Dictionary<string, string> FlavourDic = new Dictionary<string, string>
-            {
-                { "1", "Vanilla" },
-                { "2", "Chocolate" },
-                { "3", "Strawberry" },
-                { "4", "Durian" },
-                { "5", "Ube" },
-                { "6", "Sea Salt" }
-            };
-                    Console.Write("Enter Your Flavour Number: ");
-                    string option = Console.ReadLine();
+                    Dictionary<int, string> FlavourDic = new Dictionary<int, string>
+                    {
+                    { 1, "Vanilla" },
+                    { 2, "Chocolate" },
+                    { 3, "Strawberry" },
+                    { 4, "Durian" },
+                    { 5, "Ube" },
+                    { 6, "Sea Salt" }
+                    };
 
+                    int option = DataValidationInt("Enter Your Flavour Number: ", new List<int>() { 1, 2, 3, 4, 5, 6 });
                     if (FlavourDic.ContainsKey(option))
                     {
-                        Console.WriteLine($"Enter the number of Scoops of {FlavourDic[option]}: ");
-                        int FlavourScoopNum = Convert.ToInt16(Console.ReadLine());
+                        int FlavourScoopNum = DataValidationInt($"Enter the number of Scoops of {FlavourDic[option]}: "
+                            , new List<int> { 1, 2, 3 });
                         while ((FlavourScoopNum + scoops) > 3)
                         {
                             Console.WriteLine("You cannot have more than 3 scoops per Ice Cream.");
-                            Console.WriteLine($"Re-enter the number of Scoops for {FlavourDic[option]}: ");
-                            FlavourScoopNum = Convert.ToInt16(Console.ReadLine());
+                            FlavourScoopNum = DataValidationInt($"Enter the number of Scoops of {FlavourDic[option]}: "
+                            , new List<int> { 1, 2, 3 });
                         }
                         scoops += FlavourScoopNum;
                         if (FlavourScoopNum != 0)
                         {
-                            if (option == "4" || option == "5" || option == "6")
+                            if (option == 4 || option == 5 || option == 6)
                             {
                                 newIceCream.Flavours.Add(new Flavour(FlavourDic[option], true, FlavourScoopNum));
                             }
@@ -356,9 +370,8 @@ IceCream CreateIceCream()
                                 newIceCream.Flavours.Add(new Flavour(FlavourDic[option], false, FlavourScoopNum));
                             }
                         }
-                        Console.Write("Enter 'Y' to add more flavours and 'N' To exit: ");
-                        string AddMoreFlavourOption = Console.ReadLine();
-                        if (AddMoreFlavourOption == "N" || scoops == 3)
+                        int AddMoreFlavourOption = DataValidationInt("Enter '1' to add more flavours and '0' To exit: ", new List<int> { 0, 1 });
+                        if (AddMoreFlavourOption == 0 || scoops == 3)
                         {
                             break;
                         }
@@ -382,28 +395,28 @@ IceCream CreateIceCream()
     void IceCreamTopping(IceCream newIceCream)
     {
         Console.WriteLine(
-        "Toppings (+$1 each)\r\n" +
+        "Toppings (+1 each)\r\n" +
         "[1]Sprinkles\r\n" +
         "[2]Mochi\r\n" +
         "[3]Sago\r\n" +
         "[4]Oreos\r\n" +
         "[5]Exit/None");
 
-        Dictionary<string, Topping> ToppingsDic = new Dictionary<string, Topping>
+        Dictionary<int, Topping> ToppingsDic = new Dictionary<int, Topping>
         {
-            { "1", new Topping("Sprinkles") },
-            { "2", new Topping("Mochi") },
-            { "3", new Topping("Sago") },
-            { "4", new Topping("Oreos") }
+            { 1, new Topping("Sprinkles") },
+            { 2, new Topping("Mochi") },
+            { 3, new Topping("Sago") },
+            { 4, new Topping("Oreos") }
         };
 
         while (newIceCream.Toppings.Count < 4)
         {
-            Console.Write("Enter the option number for the topping you want:");
-            string ToppingOption = Console.ReadLine();
-            if (ToppingOption == "1" || ToppingOption == "2" || ToppingOption == "3" || ToppingOption == "4" || ToppingOption == "5")
+            int ToppingOption = DataValidationInt("Enter the option number for the topping you want:", new List<int> { 1, 2, 3, 4, 5 });
+            if (ToppingOption == 1 || ToppingOption == 2 || ToppingOption == 3
+                || ToppingOption == 4 || ToppingOption == 5)
             {
-                if (ToppingOption == "5")
+                if (ToppingOption == 5)
                 {
                     break;
                 }
@@ -460,14 +473,7 @@ IceCream CreateIceCream()
         {
             try
             {
-                Console.Write("Enter your Waffle Flavour Option: ");
-                int WaffleFlavourOption = Convert.ToInt16(Console.ReadLine());
-                while (WaffleFlavourOption != 1 && WaffleFlavourOption != 2 && WaffleFlavourOption != 3 && WaffleFlavourOption != 4)
-                {
-                    Console.WriteLine("Invalid Option.");
-                    Console.Write("Enter your Waffle Flavour Option: ");
-                    WaffleFlavourOption = Convert.ToInt16(Console.ReadLine());
-                }
+                int WaffleFlavourOption = DataValidationInt("Enter your Waffle Flavour Option: ", new List<int> { 1, 2, 3, 4 });
                 newIceCream.WaffleFlavour = waffleFalvourDic[WaffleFlavourOption];
                 break;
             }
@@ -635,7 +641,7 @@ while (true)
         id = Convert.ToInt32(Console.ReadLine());
     }
 
-    if (!(CustomerDic[id].CurrentOrder == null))
+    if (CustomerDic[id].CurrentOrder != null)
     {
         Order CurrentOrder = CustomerDic[id].CurrentOrder;
 
@@ -652,20 +658,17 @@ while (true)
         {
             try
             {
-                Console.Write("Enter your option (option 6): ");
-                Option6Option = Convert.ToInt32(Console.ReadLine());
-                while (Option6Option != 1 && Option6Option != 2 && Option6Option != 3)
-                {
-                    Console.WriteLine("Invlid Option");
-                    Console.Write("Re-enter your option: ");
-                    Option6Option = Convert.ToInt32(Console.ReadLine());
-                }
+                Console.Write("Enter your option: ");
+                Option6Option = DataValidationInt("Enter your option: ",
+                    new List<int> { 1, 2, 3 });
                 switch (Option6Option)
                 {
                     case 1:
+                        int count = 1;
                         foreach (IceCream ic in CurrentOrder.IceCreamList)
                         {
-                            Console.WriteLine(ic);
+                            Console.WriteLine($"[{count}]: \n{ic}");
+                            count++;
                         }
                         Console.Write("Enter which Ice Cream you want to change: ");
                         int ChangeIceCreamID = Convert.ToInt16(Console.ReadLine());
@@ -674,6 +677,7 @@ while (true)
                     case 2:
                         IceCream NewIceCream = CreateIceCream();
                         CurrentOrder.AddIceCream(NewIceCream);
+                        Console.WriteLine(NewIceCream);
                         break;
 
                     case 3:

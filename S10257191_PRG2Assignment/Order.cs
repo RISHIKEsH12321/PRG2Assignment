@@ -56,6 +56,31 @@ namespace S10257191_PRG2Assignment
             { 4, "Basic" }
             };
 
+            int DataValidationInt(string prompt, List<int> listOfValues)
+            {
+                int option;
+                while (true)
+                {
+                    try
+                    {
+                        Console.Write(prompt);
+                        option = Convert.ToInt32(Console.ReadLine());
+                        while (!(listOfValues.Contains(option)))
+                        {
+                            Console.WriteLine("Invalid Input.");
+                            Console.Write(prompt);
+                            option = Convert.ToInt32(Console.ReadLine());
+                        }
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+                return option;
+            }
+
             IceCream Option1(IceCream modifyingIceCream)
             {
                 int ChangeIceCreamTypeOption = 0;
@@ -68,14 +93,7 @@ namespace S10257191_PRG2Assignment
                             "Options to Change:\r\n" +
                             "[1] Cone\r\n" +
                             "[2] Waffle");
-                        Console.Write("Enter your Option: ");
-                        ChangeIceCreamTypeOption = Convert.ToInt16(Console.ReadLine());
-                        while (ChangeIceCreamTypeOption != 1 || ChangeIceCreamTypeOption != 2)
-                        {
-                            Console.WriteLine("Invalid Option.");
-                            Console.Write("Re-enter your Option: ");
-                            ChangeIceCreamTypeOption = Convert.ToInt16(Console.ReadLine());
-                        }
+                        ChangeIceCreamTypeOption = DataValidationInt("Enter your Option: ", new List<int> { 1, 2 });
                         if (ChangeIceCreamTypeOption == 1)
                         {
                             bool dip = false;
@@ -97,19 +115,13 @@ namespace S10257191_PRG2Assignment
                         else
                         {
                             Console.WriteLine("Waffle Flavour Options:");
-                            foreach(KeyValuePair<int,string> flavour in WaffleFlavourDic)
+                            foreach (KeyValuePair<int, string> flavour in WaffleFlavourDic)
                             {
                                 Console.WriteLine($"[{flavour.Key}] {flavour.Value}");
                             }
-                            Console.Write("Enter your waffle flavour option: ");
-                            int WaffleFlavourOption = Convert.ToInt16(Console.ReadLine());
-                            while (WaffleFlavourOption < 1 || WaffleFlavourOption > WaffleFlavourDic.Count + 1)
-                            {
-                                Console.WriteLine("Invalid Option.");
-                                Console.Write("Re-enter your waffle flavour option: ");
-                                WaffleFlavourOption = Convert.ToInt16(Console.ReadLine());
-                            }
-                            Waffle waffle = new Waffle("Waffle", modifyingIceCream.Scoop, modifyingIceCream.Flavours,modifyingIceCream.Toppings, WaffleFlavourDic[WaffleFlavourOption]);
+                            int WaffleFlavourOption = DataValidationInt("Enter your waffle flavour option: ",
+                                                        new List<int> { 1, 2, 3, 4 });                            
+                            Waffle waffle = new Waffle("Waffle", modifyingIceCream.Scoop, modifyingIceCream.Flavours, modifyingIceCream.Toppings, WaffleFlavourDic[WaffleFlavourOption]);
                             return waffle;
                         }
                     }
@@ -120,14 +132,8 @@ namespace S10257191_PRG2Assignment
                             "Options to Change:\r\n" +
                             "[1] Cup\r\n" +
                             "[2] Waffle");
-                        Console.Write("Enter your Option: ");
-                        ChangeIceCreamTypeOption = Convert.ToInt16(Console.ReadLine());
-                        while (ChangeIceCreamTypeOption != 1 || ChangeIceCreamTypeOption != 2)
-                        {
-                            Console.WriteLine("Invalid Option.");
-                            Console.Write("Re-enter your Option: ");
-                            ChangeIceCreamTypeOption = Convert.ToInt16(Console.ReadLine());
-                        }
+                        ChangeIceCreamTypeOption = ChangeIceCreamTypeOption = DataValidationInt("Enter your Option: ",
+                            new List<int> { 1, 2 });
                         if (ChangeIceCreamTypeOption == 1)
                         {
                             Cup cup = new Cup("Cup", modifyingIceCream.Scoop, modifyingIceCream.Flavours, modifyingIceCream.Toppings);
@@ -139,15 +145,9 @@ namespace S10257191_PRG2Assignment
                             foreach (KeyValuePair<int, string> flavour in WaffleFlavourDic)
                             {
                                 Console.WriteLine($"[{flavour.Key}] {flavour.Value}");
-                            }
-                            Console.Write("Enter your waffle flavour option: ");
-                            int WaffleFlavourOption = Convert.ToInt16(Console.ReadLine());
-                            while (WaffleFlavourOption < 1 || WaffleFlavourOption > WaffleFlavourDic.Count + 1)
-                            {
-                                Console.WriteLine("Invalid Option.");
-                                Console.Write("Re-enter your waffle flavour option: ");
-                                WaffleFlavourOption = Convert.ToInt16(Console.ReadLine());
-                            }
+                            }                            
+                            int WaffleFlavourOption = DataValidationInt("Enter your waffle flavour option: ",
+                                                        new List<int> { 1, 2, 3, 4 });                            
                             Waffle waffle = new Waffle("Waffle", modifyingIceCream.Scoop, modifyingIceCream.Flavours, modifyingIceCream.Toppings, WaffleFlavourDic[WaffleFlavourOption]);
                             return waffle;
                         }
@@ -160,14 +160,8 @@ namespace S10257191_PRG2Assignment
                             "Options to Change:\r\n" +
                             "[1] Cup\r\n" +
                             "[2] Cone");
-                        Console.Write("Enter your Option: ");
-                        ChangeIceCreamTypeOption = Convert.ToInt16(Console.ReadLine());
-                        while (ChangeIceCreamTypeOption != 1 || ChangeIceCreamTypeOption != 2)
-                        {
-                            Console.WriteLine("Invalid Option.");
-                            Console.Write("Re-enter your Option: ");
-                            ChangeIceCreamTypeOption = Convert.ToInt16(Console.ReadLine());
-                        }
+                        ChangeIceCreamTypeOption = ChangeIceCreamTypeOption = DataValidationInt("Enter your Option: ",
+                            new List<int> { 1, 2 });                        
                         if (ChangeIceCreamTypeOption == 1)
                         {
                             Cup cup = new Cup("Cup", modifyingIceCream.Scoop, modifyingIceCream.Flavours, modifyingIceCream.Toppings);
@@ -195,7 +189,7 @@ namespace S10257191_PRG2Assignment
 
                     }
                 }
-                
+
             }
 
             void Option2(IceCream modifyingIceCream)
@@ -216,12 +210,12 @@ namespace S10257191_PRG2Assignment
                         "[1] Add Scoops\r\n" +
                         "[2] Substract/Remove Scoops\r\n"
                         );
-                        int changeScoopOption = Convert.ToInt16(Console.ReadLine());
+                        int changeScoopOption = DataValidationInt("Enter your Option: ", new List<int> { 1,2 });
                         switch (changeScoopOption)
                         {
                             case 1:
-                                Console.Write("Enter how many Scoops to add: ");
-                                int AddScoopNum = Convert.ToInt16(Console.ReadLine());
+                                int AddScoopNum = DataValidationInt("Enter how many Scoops to add: "
+                                    , new List<int> { 0, 1, 2, 3 });
                                 Console.WriteLine
                                 (
                                 "Regular Flavours" +
@@ -238,7 +232,8 @@ namespace S10257191_PRG2Assignment
                                     try
                                     {
                                         Console.Write("Enter which flavour the scoops should be: ");
-                                        int ScoopFlavourOption = Convert.ToInt16(Console.ReadLine());
+                                        int ScoopFlavourOption = DataValidationInt("Enter which flavour the scoops should be: ",
+                                            new List<int> { 1, 2, 3, 4, 5, 6 });
                                         if (modifyingIceCream.Scoop + AddScoopNum <= 3)
                                         {
                                             bool check = false;
@@ -266,14 +261,6 @@ namespace S10257191_PRG2Assignment
 
                                             }
                                             break;
-                                        }
-                                        else if (ScoopFlavourOption < 1 && ScoopFlavourOption > 6)
-                                        {
-                                            Console.WriteLine("Enter a Valid Flabour Option.");
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine("Scoop Cannot have more than 3 Scoops.");
                                         }
                                     }
                                     catch (Exception ex)
@@ -346,8 +333,10 @@ namespace S10257191_PRG2Assignment
                 {
                     try
                     {
-                        Console.Write("Enter which flavour you want to change:");
-                        int changeFlavourOption = Convert.ToInt16(Console.ReadLine());
+                        List<int> dataVal = new List<int>();
+                        for (int i = 1; i < count; i++) { dataVal.Add(i); }
+                        int changeFlavourOption = DataValidationInt("Enter which flavour you want to change:",
+                            dataVal);
                         Console.WriteLine
                         (
                         "Regular Flavours" +
@@ -359,8 +348,8 @@ namespace S10257191_PRG2Assignment
                         "\r\n[5] Ube" +
                         "\r\n[6] Sea Salt"
                         );
-                        Console.Write("Enter which flavour you want to change to: ");
-                        int ToFlavaour = Convert.ToInt16(Console.ReadLine());
+                        int ToFlavaour = DataValidationInt("Enter which flavour you want to change to: ",
+                            new List<int> { 1, 2, 3, 4, 5, 6 });
                         modifyingIceCream.Flavours[changeFlavourOption--].Type = FlavourDic[ToFlavaour];
                         break;
                     }
@@ -387,14 +376,9 @@ namespace S10257191_PRG2Assignment
                         "Options\r\n" +
                         "[1] Add Toppings\r\n" +
                         "[2] Remove Toppings\r\n");
-                        Console.Write("Enter you Option: ");
-                        int ToppingOption = Convert.ToInt16(Console.ReadLine());
-                        while (ToppingOption != 1 || ToppingOption != 2)
-                        {
-                            Console.WriteLine("Invalid Option. Enter again.");
-                            Console.Write("Enter you Option: ");
-                            ToppingOption = Convert.ToInt16(Console.ReadLine());
-                        }
+                        int ToppingOption = DataValidationInt("Enter you Option: ",
+                            new List<int> { 1, 2 });
+                        
                         if (ToppingOption == 1)
                         {
                             if (modifyingIceCream.Toppings.Count == 4)
@@ -408,13 +392,8 @@ namespace S10257191_PRG2Assignment
                                     Console.WriteLine($"[{kvp.Key}] {kvp.Value}");
                                 }
                                 Console.Write("Enter what topping you want to add: ");
-                                int AddToppingOption = Convert.ToInt16(Console.ReadLine());
-                                while (!ToppingDic.ContainsKey(AddToppingOption))
-                                {
-                                    Console.WriteLine("Enter a valid topping option.");
-                                    Console.Write("Enter what topping you want to add: ");
-                                    AddToppingOption = Convert.ToInt16(Console.ReadLine());
-                                }
+                                int AddToppingOption = DataValidationInt("Enter what topping you want to add: ",
+                                    new List<int> { 1, 2, 3, 4 });                                 
                                 modifyingIceCream.Toppings.Add(new Topping(ToppingDic[AddToppingOption]));
                             }
                         }
@@ -490,7 +469,7 @@ namespace S10257191_PRG2Assignment
             {
                 Console.WriteLine($"Current waffle flavour is {modifyingIceCream.WaffleFlavour}");
                 Console.WriteLine("Available waffle flavours:");
-                foreach (KeyValuePair<int,string> kvp in WaffleFlavourDic)
+                foreach (KeyValuePair<int, string> kvp in WaffleFlavourDic)
                 {
                     Console.WriteLine($"[{kvp.Key}] {kvp.Value}");
                 }
@@ -499,13 +478,9 @@ namespace S10257191_PRG2Assignment
                     try
                     {
                         Console.Write("Enter option for waffle flavour you want to change to: ");
-                        int WaffleFlavourOption = Convert.ToInt16(Console.ReadLine());
-                        while (!WaffleFlavourDic.ContainsKey(WaffleFlavourOption))
-                        {
-                            Console.WriteLine("Invalid Option.");
-                            Console.Write("Enter option for waffle flavour you want to change to: ");
-                            WaffleFlavourOption = Convert.ToInt16(Console.ReadLine());
-                        }
+                        int WaffleFlavourOption = DataValidationInt("Enter option for waffle flavour you want to change to: ",
+                            new List<int> { 1, 2, 3, 4 }); 
+
                         modifyingIceCream.WaffleFlavour = WaffleFlavourDic[WaffleFlavourOption];
                         break;
                     }
@@ -514,9 +489,11 @@ namespace S10257191_PRG2Assignment
                         Console.WriteLine(ex.Message);
                     }
                 }
-                
+
             }
-            IceCream modifyingIceCream = IceCreamList[id--];
+            id--;
+            IceCream modifyingIceCream = IceCreamList[id];
+
             if (modifyingIceCream is Cup)
             {
                 Console.WriteLine(
@@ -524,9 +501,9 @@ namespace S10257191_PRG2Assignment
                     "[1] Option\r\n" +
                     "[2] Scoops\r\n" +
                     "[3] Flavours\r\n" +
-                    "[4] Toppings\r\n"                    
+                    "[4] Toppings\r\n"
                     );
-                
+
                 while (true)
                 {
                     try
@@ -553,6 +530,7 @@ namespace S10257191_PRG2Assignment
                     {
                         Console.WriteLine(ex.Message);
                     }
+                    break;
                 }
             }
             else if (modifyingIceCream is Cone)
@@ -564,7 +542,7 @@ namespace S10257191_PRG2Assignment
                     "[2] Scoops\r\n" +
                     "[3] Flavours\r\n" +
                     "[4] Toppings\r\n" +
-                    "[5] Dipped Cone\r\n" 
+                    "[5] Dipped Cone\r\n"
                     );
                 while (true)
                 {
@@ -587,7 +565,7 @@ namespace S10257191_PRG2Assignment
                         case 5:
                             Option5Cone(modifyingCone);
                             break;
-                    }
+                    }break;
                 }
             }
             else if (modifyingIceCream is Waffle)
@@ -623,13 +601,14 @@ namespace S10257191_PRG2Assignment
                             Option5Waffle(modifyingWaffle);
                             break;
                     }
+                    break;
                 }
             }
         }
 
         public void AddIceCream(IceCream iceCream)
         {
-            IceCreamList.Add(iceCream);            
+            IceCreamList.Add(iceCream);
         }
 
         public void DeleteIceCream(int id)

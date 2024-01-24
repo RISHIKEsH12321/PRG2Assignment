@@ -567,9 +567,9 @@ while (true)
 
         if (CustomerDic.ContainsKey(custId))
         {
+            Order newOrder = CustomerDic[custId].MakeOrder();
             while (true)
             {
-                Order newOrder = CustomerDic[custId].MakeOrder();
                 IceCream newIceCream = CreateIceCream();
                 newOrder.AddIceCream(newIceCream);                                      //Adding ice cream to order
                 Console.Write("Would you like to add another ice cream order? (Y/N): ");//Asking user if they make to make another ice cream

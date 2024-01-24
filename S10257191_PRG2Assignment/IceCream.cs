@@ -26,32 +26,34 @@ namespace S10257191_PRG2Assignment
         {
             Option = option;
             Scoop = scoop;
+            Flavours = flavours;
+            Toppings = toppings;
         }
 
         public abstract double CalculatePrice();
 
         public override string ToString()
         {
-            string result = $"Option: {Option} \nNumber of Scoops: {Scoop}\nFlavours: \n";
-            foreach (Flavour flavour in Flavours)
-            {
-                result += $"{flavour.Type}\n";
-            }
+            string result = $"Option: {Option} \nNumber of Scoops: {Scoop}\nFlavours: ";
+            string flavoursString = string.Join(", ", Flavours.Select(flavour => flavour.Type));
+            result += flavoursString + "\n";
+
+            // Check if there are toppings
             if (Toppings.Count > 0)
             {
-                result += "Toppings:\n";
-                foreach (Topping topping in Toppings)
-                {
-                    result += $"{topping.Type}\n";
-                }
+                // Build string for Toppings
+                string toppingsString = string.Join(", ", Toppings.Select(topping => topping.Type));
+
+                // Append Toppings to the main result string
+                result += $"Toppings: {toppingsString}\n";
             }
             return result;
         }
     }
 
-    internal class Cup: IceCream
+    internal class Cup : IceCream
     {
-        public Cup() { }
+        public Cup() { Option = "Cup"; }
 
         public Cup(string option, int scoops, List<Flavour> flavours, List<Topping> toppings)
             : base(option, scoops, flavours, toppings)
@@ -77,7 +79,7 @@ namespace S10257191_PRG2Assignment
             }
 
 
-            foreach(Flavour flavour in Flavours)
+            foreach (Flavour flavour in Flavours)
             {
                 if (flavour.Premium)
                 {
@@ -102,7 +104,7 @@ namespace S10257191_PRG2Assignment
 
         public bool Dipped { get; set; }
 
-        public Cone() { }
+        public Cone() { Option = "Cone";  }
 
         public Cone(string option, int scoops, List<Flavour> flavours, List<Topping> toppings, bool dip)
             : base(option, scoops, flavours, toppings)
@@ -156,7 +158,7 @@ namespace S10257191_PRG2Assignment
 
         public string WaffleFlavour { get; set; }
 
-        public Waffle() { }
+        public Waffle() { Option = "Waffle";  }
 
         public Waffle(string option, int scoops, List<Flavour> flavours, List<Topping> toppings, string waffle)
             : base(option, scoops, flavours, toppings)
@@ -182,7 +184,7 @@ namespace S10257191_PRG2Assignment
                     break;
             }
 
-            if (WaffleFlavour == "Red velvet" || WaffleFlavour == "Charcoal" || WaffleFlavour == "Pandan") 
+            if (WaffleFlavour == "Red velvet" || WaffleFlavour == "Charcoal" || WaffleFlavour == "Pandan")
             { total += 3; }
             else { waffleFlavour = "Basic"; }
 

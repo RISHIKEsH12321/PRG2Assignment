@@ -253,14 +253,14 @@ void ListCustomers()
         if (s != null)
         {
             string[] heading = s.Split(',');
-            Console.WriteLine("{0,-10}  {1,-10}  {2,-10}",
-                heading[0], heading[1], heading[2]);
+            Console.WriteLine("{0,-10} {1,-10} {2,-15} {3,-20} {4,-20} {5,-10}",
+                heading[0], heading[1], heading[2], heading[3], heading[4], heading[5]);
         }
         while ((s = sr.ReadLine()) != null)
         {
             string[] customer = s.Split(',');
-            Console.WriteLine("{0,-10}  {1,-10}  {2,-10}",
-                customer[0], customer[1], customer[2]);
+            Console.WriteLine("{0,-10} {1,-10} {2,-15} {3,-20} {4,-20} {5,-10}",
+                customer[0], customer[1], customer[2], customer[3], customer[4], customer[5]);
         }
     }
     Console.WriteLine();

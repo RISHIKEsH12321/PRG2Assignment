@@ -30,8 +30,8 @@ Queue<Order> goldOrderQueue = new Queue<Order>();
 int orderCount = 0;
 
 InnitCustomer(CustomerDic);
-InnitOrders(CustomerDic, orderCount);
-Console.WriteLine("Final " + orderCount);
+orderCount = InnitOrders(CustomerDic, orderCount);
+orderCount++;
 
 void InnitCustomer(Dictionary<int, Customer> cusDic)
 {
@@ -81,14 +81,7 @@ int InnitOrders(Dictionary<int, Customer> cusDic, int orderCount)
                 int Memid = Convert.ToInt32(data[1]);
                 DateTime Recieved = Convert.ToDateTime(data[2]);
                 DateTime? fulfilled;
-                if (data[3] == "")
-                {
-                    fulfilled = null;
-                }
-                else
-                {
-                    fulfilled = Convert.ToDateTime(data[3]);
-                }
+                fulfilled = Convert.ToDateTime(data[3]);
 
                 string option = data[4];
                 int scoops = Convert.ToInt32(data[5]);
@@ -161,58 +154,34 @@ int InnitOrders(Dictionary<int, Customer> cusDic, int orderCount)
                 {
                     ic = new Waffle(option, scoops, fList, tList, waffleFlavour);
                 }
-                
-
-                if (fulfilled == null)
+                                                
+                Order pOrder = new Order(OrderId, Recieved);
+                pOrder.TimeFulfilled = fulfilled;
+                bool check = true;
+                foreach (Order order in cusDic[Memid].OrderHistory)
                 {
-                    Order cOrder = new Order(OrderId, Recieved);
-                    cusDic[Memid].CurrentOrder = new Order(OrderId, Recieved);
-                    Console.WriteLine(1);
-                    if (cusDic[Memid].CurrentOrder.Id == OrderId)
+                    if (order.Id == OrderId)
                     {
-                        cusDic[Memid].CurrentOrder.IceCreamList.Add(ic);
-                    }
-                    else
-                    {
-                        cusDic[Memid].CurrentOrder = cOrder;
-                        cOrder.IceCreamList.Add(ic);
+                        order.IceCreamList.Add(ic);
+                        check = false;
+                        break;
                     }
                 }
-                else
+                if (check)
                 {
-                    Order pOrder = new Order(OrderId, Recieved);
-                    pOrder.TimeFulfilled = fulfilled;
-                    bool check = true;
-                    foreach (Order order in cusDic[Memid].OrderHistory)
-                    {
-                        if (order.Id == OrderId)
-                        {
-                            order.IceCreamList.Add(ic);
-                            check = false;
-                            break;
-                        }
-                    }
-                    if (check)
-                    {
-                        pOrder.IceCreamList.Add(ic);
-                        cusDic[Memid].OrderHistory.Add(pOrder);
-                    }
-
+                    pOrder.IceCreamList.Add(ic);
+                    cusDic[Memid].OrderHistory.Add(pOrder);
                 }
                 orderCount = OrderId;
-                Console.WriteLine(orderCount);
-
             }
 
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);                
-            }
+            }   
         }
     }
-    Console.WriteLine(orderCount + "hi");
     return orderCount;
-
 }
 int DataValidationInt(string prompt, List<int> listOfValues)
 {
@@ -626,7 +595,9 @@ while (true)
 
             if (CustomerDic.ContainsKey(custId))
             {
-                Order newOrder = CustomerDic[custId].MakeOrder();
+                Order newOrder = CustomerDic[custId].MakeOrder();                
+                newOrder.Id = orderCount;
+                orderCount++;
                 newOrder.TimeRecieved = DateTime.Now;
                 while (true)
                 {

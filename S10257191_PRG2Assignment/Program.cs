@@ -27,9 +27,11 @@ Dictionary<string, Flavour> FlavourDic = new Dictionary<string, Flavour>
 
 Queue<Order> regularOrderQueue = new Queue<Order>();
 Queue<Order> goldOrderQueue = new Queue<Order>();
+int orderCount = 0;
 
 InnitCustomer(CustomerDic);
-InnitOrders(CustomerDic);
+InnitOrders(CustomerDic, orderCount);
+Console.WriteLine("Final " + orderCount);
 
 void InnitCustomer(Dictionary<int, Customer> cusDic)
 {
@@ -58,7 +60,7 @@ void InnitCustomer(Dictionary<int, Customer> cusDic)
         }
     }
 }
-void InnitOrders(Dictionary<int, Customer> cusDic)
+int InnitOrders(Dictionary<int, Customer> cusDic, int orderCount)
 {
     using (StreamReader sr = new StreamReader("orders.csv"))
     {
@@ -75,6 +77,7 @@ void InnitOrders(Dictionary<int, Customer> cusDic)
             try
             {
                 int OrderId = Convert.ToInt32(data[0]);
+                orderCount = OrderId;
                 int Memid = Convert.ToInt32(data[1]);
                 DateTime Recieved = Convert.ToDateTime(data[2]);
                 DateTime? fulfilled;
@@ -196,13 +199,20 @@ void InnitOrders(Dictionary<int, Customer> cusDic)
                     }
 
                 }
+                orderCount = OrderId;
+                Console.WriteLine(orderCount);
+
             }
+
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);                
             }
         }
     }
+    Console.WriteLine(orderCount + "hi");
+    return orderCount;
+
 }
 int DataValidationInt(string prompt, List<int> listOfValues)
 {
@@ -254,14 +264,14 @@ void ListCustomers()
         if (s != null)
         {
             string[] heading = s.Split(',');
-            Console.WriteLine("{0,-10}  {1,-10}  {2,-10}",
-                heading[0], heading[1], heading[2]);
+            Console.WriteLine("{0,-10} {1,-10} {2,-15} {3,-20} {4,-20} {5,-10}",
+                heading[0], heading[1], heading[2], heading[3], heading[4], heading[5]);
         }
         while ((s = sr.ReadLine()) != null)
         {
             string[] customer = s.Split(',');
-            Console.WriteLine("{0,-10}  {1,-10}  {2,-10}",
-                customer[0], customer[1], customer[2]);
+            Console.WriteLine("{0,-10} {1,-10} {2,-15} {3,-20} {4,-20} {5,-10}",
+                customer[0], customer[1], customer[2], customer[3], customer[4], customer[5]);
         }
     }
     Console.WriteLine();
@@ -443,12 +453,19 @@ IceCream CreateIceCream()
     void ConeDipped(Cone newIceCream)
     {
         Console.Write("Do you want your Cone to be Dipped in Chocolate (Y/N): ");
-        string reply = Console.ReadLine();
+        string reply = Console.ReadLine().ToUpper();
+        while (reply != "Y" && reply != "N")
+        {
+            Console.WriteLine("Invalid input");
+            Console.Write("Do you want your Cone to be Dipped in Chocolate (Y/N): ");
+            reply = Console.ReadLine().ToUpper();
+        }
+
         if (reply == "Y")
         {
             newIceCream.Dipped = true;
         }
-        else
+        else if (reply == "N")
         {
             newIceCream.Dipped = false;
         }
@@ -486,7 +503,7 @@ IceCream CreateIceCream()
     }
 
     IceCream newIceCream = IceCreamType();
-    //Reuturns IceCream
+    //Returns IceCream
     return newIceCream;
 }
 
@@ -526,22 +543,63 @@ while (true)
     //Question 3 (Joseph)
     else if (opt == 3)
     {
-        //Retrieving information
-        Console.Write("Enter your name: ");
-        string name = Console.ReadLine();
-        Console.Write("Enter your id number:");
-        int id = Convert.ToInt32(Console.ReadLine());
-        Console.Write("Enter your Date of Birth (dd/mm/yyyy) : ");
-        DateTime dob = Convert.ToDateTime(Console.ReadLine());
+        string name;
+        int id;
+        DateTime dob;
+        while (true)
+        {
+            //Retrieving Name
+            Console.Write("Enter your name: ");
+            name = Console.ReadLine();
+            if (name == "")
+            {
+                Console.WriteLine("Please enter a name!");
+                Console.WriteLine();
+                continue;
+            }
+            break;
+        }
+        while (true)
+        {
+            try
+            {
+                //Retrieving ID
+                Console.Write("Enter your id number:");
+                id = Convert.ToInt32(Console.ReadLine());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine();
+                continue;
+            }
+            break;
+        }
+        while (true)
+        {
+            try
+            {
+                //Retrieving Date of Birth
+                Console.Write("Enter your Date of Birth (dd/mm/yyyy) : ");
+                dob = Convert.ToDateTime(Console.ReadLine());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
 
+                Console.WriteLine();
+                continue;
+            }
+            break;
+        }
         //Storing info in new customer object
-        Customer newCustomer = new Customer(name,id,dob);
+        Customer newCustomer = new Customer(name, id, dob);
 
         //Creating a new pointcard object 
-        PointCard newCard = new PointCard(0,0);
+        PointCard newCard = new PointCard(0, 0);
 
         //Appending new data to customers.csv file
-        using (StreamWriter sw = new StreamWriter("customers.csv",true))
+        using (StreamWriter sw = new StreamWriter("customers.csv", true))
         {
             sw.WriteLine(name + "," + Convert.ToString(id) + "," + dob.ToString("dd/MM/yyyy") + "," + "Ordinary" + "," + newCard.Points + "," + newCard.PunchCard);
         }
@@ -551,38 +609,66 @@ while (true)
     else if (opt == 4)
     {
         ListCustomers();
-        Console.Write("Enter customer Id: ");
-        int custId = Convert.ToInt32(Console.ReadLine());
-
-        if (CustomerDic.ContainsKey(custId))
+        int custId;
+        while (true)
         {
-            Order newOrder = CustomerDic[custId].MakeOrder();
-            newOrder.TimeRecieved = DateTime.Now;
-            while (true)
+            try
             {
-                IceCream newIceCream = CreateIceCream();
-                newOrder.AddIceCream(newIceCream);                                      //Adding ice cream to order
-                Console.Write("Would you like to add another ice cream order? (Y/N): ");//Asking user if they make to make another ice cream
-                string ans = Console.ReadLine();
-                if (ans == "Y")
+                Console.Write("Enter customer Id: ");
+                custId = Convert.ToInt32(Console.ReadLine());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine();
+                continue;
+            }
+
+            if (CustomerDic.ContainsKey(custId))
+            {
+                Order newOrder = CustomerDic[custId].MakeOrder();
+                newOrder.TimeRecieved = DateTime.Now;
+                while (true)
                 {
-                    continue;
-                }
-                else if (ans == "N")
-                {
-                    CustomerDic[custId].CurrentOrder = newOrder;
-                    if (CustomerDic[custId].Rewards.Tier == "Gold")
+                    IceCream newIceCream = CreateIceCream();
+                    newOrder.AddIceCream(newIceCream);                                              //Adding ice cream to order
+                    Console.Write("Would you like to add another ice cream to the order? (Y/N): ");//Asking user if they make to make another ice 
+                    string ans = Console.ReadLine().ToUpper();
+                    while (ans != "Y" && ans!= "N")  
                     {
-                        goldOrderQueue.Enqueue(CustomerDic[custId].CurrentOrder);
+                        Console.WriteLine("Invalid input");
+                        Console.Write("Would you like to add another ice cream to the order? (Y/N): ");
+                        ans = Console.ReadLine().ToUpper();
                     }
-                    else
+                    
+                    if (ans == "Y")
                     {
-                        regularOrderQueue.Enqueue(CustomerDic[custId].CurrentOrder);
+                        continue;
                     }
-                    break;
+                    else if (ans == "N")
+                    {
+                        CustomerDic[custId].CurrentOrder = newOrder;
+                        if (CustomerDic[custId].Rewards.Tier == "Gold")
+                        {
+                            goldOrderQueue.Enqueue(CustomerDic[custId].CurrentOrder);
+                        }
+                        else
+                        {
+                            regularOrderQueue.Enqueue(CustomerDic[custId].CurrentOrder);
+                        }
+                        break;
+                    }
                 }
             }
-            Console.WriteLine("Order added successfully!");  
+            else
+            {
+                Console.WriteLine("ID does not match with database");
+                Console.WriteLine("Please enter the correct ID");
+                Console.WriteLine();
+                continue;
+            }
+            Console.WriteLine("Order added successfully!");
+            break;
         }
  
     }

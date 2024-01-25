@@ -572,6 +572,7 @@ while (true)
         {
             sw.WriteLine(name + "," + Convert.ToString(id) + "," + dob.ToString("dd/MM/yyyy") + "," + "Ordinary" + "," + newCard.Points + "," + newCard.PunchCard);
         }
+        CustomerDic.Add(newCustomer.MemberId, newCustomer);
         Console.WriteLine("New customer added!");
     }
     //Question 4 (Joseph)

@@ -230,6 +230,7 @@ int DataValidationInt(string prompt, List<int> listOfValues)
 }
 void DisplayMenu()
 {
+    Console.WriteLine();
     Console.WriteLine("Ice Cream Shop Management System");
     Console.WriteLine("===============================================\n" +
                       "[1] List all customers\n" +
@@ -492,7 +493,7 @@ IceCream CreateIceCream()
 while (true)
 {
     DisplayMenu();
-    int opt = DataValidationInt("Enter your option: ", new List<int> { 1, 2, 3, 4, 5, 6 }); 
+    int opt = DataValidationInt("Enter your option: ", new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8 }); 
     if (opt == 0)
     {
         Console.WriteLine("Exiting...");
@@ -505,34 +506,23 @@ while (true)
     }
     //Question 2
     else if (opt == 2)
-{
-    int count = 0;
-    foreach (KeyValuePair<int, Customer> cus in CustomerDic)
     {
-        if (cus.Value.Rewards.Tier == "Gold" && cus.Value.CurrentOrder.TimeRecieved != DateTime.MinValue)
+        int count = 0;
+        foreach (Order o in goldOrderQueue)
         {
+            Console.WriteLine(o);
             count++;
-            Console.WriteLine(cus.Value.CurrentOrder);
+        }
+        foreach (Order o in regularOrderQueue)
+        {
+            Console.WriteLine(o);
+            count++;
+        }        
+        if (count == 0)
+        {
+            Console.WriteLine("Currently, there are no unfulfilled orders.");
         }
     }
-    foreach (KeyValuePair<int, Customer> cus in CustomerDic)
-    {
-        if (cus.Value.CurrentOrder != null)
-            {
-
-                if (cus.Value.Rewards.Tier != "Gold")
-                {
-                    count++;
-                    Console.WriteLine(cus.Value.CurrentOrder);
-                }
-            }
-        
-    }
-    if (count == 0)
-    {
-        Console.WriteLine("Currently, there are no unfulfilled orders.");
-    }
-}
     //Question 3 (Joseph)
     else if (opt == 3)
     {

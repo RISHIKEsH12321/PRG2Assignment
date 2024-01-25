@@ -35,7 +35,7 @@ namespace S10257191_PRG2Assignment
         public override string ToString()
         {
             string result = $"Option: {Option} \nNumber of Scoops: {Scoop}\nFlavours: ";
-            string flavoursString = string.Join(", ", Flavours.Select(flavour => flavour.Type));
+            string flavoursString = string.Join(", ", Flavours.Select(flavour => $"{flavour.Type}({flavour.Quantity})"));
             result += flavoursString + "\n";
 
             // Check if there are toppings

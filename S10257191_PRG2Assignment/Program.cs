@@ -441,7 +441,7 @@ IceCream CreateIceCream()
 
     void ConeDipped(Cone newIceCream)
     {
-        Console.WriteLine("Do you want your Cone to be Dipped in Chocolate (Y/N): ");
+        Console.Write("Do you want your Cone to be Dipped in Chocolate (Y/N): ");
         string reply = Console.ReadLine();
         if (reply == "Y")
         {
@@ -567,6 +567,7 @@ while (true)
         if (CustomerDic.ContainsKey(custId))
         {
             Order newOrder = CustomerDic[custId].MakeOrder();
+            newOrder.TimeRecieved = DateTime.Now;
             while (true)
             {
                 IceCream newIceCream = CreateIceCream();

@@ -656,10 +656,8 @@ while (true)
             if (CustomerDic.ContainsKey(custId))
             {
                 Order newOrder = CustomerDic[custId].MakeOrder();
-                Console.WriteLine(newOrder.Id);
                 newOrder.Id = orderCount;
                 orderCount++;
-                Console.WriteLine(orderCount);
                 newOrder.TimeRecieved = DateTime.Now;
                 while (true)
                 {
@@ -831,7 +829,7 @@ while (true)
             {
                 if (CustomerDic[k].CurrentOrder.IceCreamList == list)
                 {
-                    Console.WriteLine(list);
+                    Console.WriteLine(CustomerDic[k].CurrentOrder);
                     double total = CustomerDic[k].CurrentOrder.CalculateTotal();
                     Console.WriteLine("Total: ${0}", total);
                     Console.WriteLine("Membership Tier: {0}\n" +
@@ -871,7 +869,10 @@ while (true)
                                 Console.Write("How much points({0}) would you like to redeem (Enter '0' if you do not wish to redeem any): ", CustomerDic[k].Rewards.Points);
                                 int points = Convert.ToInt32(Console.ReadLine());
                                 if (points == 0) //End point redeeming prompt if user enter 0
+                                {
+                                    Console.WriteLine("Total: ${0}", total);
                                     break;
+                                }
                                 else if (points < 0) //Prompt user again if input is less than 0
                                 {
                                     Console.WriteLine("Please enter a valid integer between 1-{0}. '0' to not redeem any points", CustomerDic[k].Rewards.Points);
@@ -898,7 +899,7 @@ while (true)
                             }
                         }
                     }
-                    int numOfIceCream = list.Count(); //Counting the number of ice cream in order
+                    int numOfIceCream = CustomerDic[k].CurrentOrder.IceCreamList.Count(); //Counting the number of ice cream in order
                     CustomerDic[k].Rewards.PunchCard = numOfIceCream; //Adding count to punchcard
                     if (CustomerDic[k].Rewards.PunchCard > 10)
                     {
@@ -916,6 +917,7 @@ while (true)
                     {
                         CustomerDic[k].Rewards.Tier = "Gold";
                     }
+                    break;
                 }
             }
         }

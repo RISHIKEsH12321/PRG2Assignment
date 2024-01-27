@@ -39,5 +39,10 @@ namespace S10257191_PRG2Assignment
         {
             PunchCard += 1;
         }
+
+        public override string ToString()
+        {
+            return $"{Points}, {Tier}, {PunchCard}";
+        }
     }
 }

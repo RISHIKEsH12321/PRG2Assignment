@@ -1,9 +1,13 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using S10257191_PRG2Assignment;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Runtime.Intrinsics.Arm;
 using System.Transactions;
+using System.Globalization;
+using System;
+
 
 //==========================================================
 // Student Number : S10241860
@@ -475,6 +479,71 @@ IceCream CreateIceCream()
     //Returns IceCream
     return newIceCream;
 }
+void DisplayBreakDown(Dictionary<int, Customer> CustomerDic)
+{
+    Dictionary<int, double> monthDic = new Dictionary<int, double>
+    {
+        {1,0},
+        {2,0},
+        {3,0},
+        {4,0},
+        {5,0},
+        {6,0},
+        {7,0},
+        {8,0},
+        {9,0},
+        {10,0},
+        {11,0},
+        {12,0}
+    };
+
+    while (true)
+    {
+        try
+        {
+            Console.Write("Enter the year: ");
+            int year = Convert.ToInt32(Console.ReadLine());
+            while (year < DateTime.MinValue.Year && year > DateTime.MaxValue.Year)
+            {
+                Console.WriteLine("Invalid Input.");
+                Console.Write("Enter the year: ");
+                year = Convert.ToInt32(Console.ReadLine());
+            }
+
+            foreach (var kvp in CustomerDic)
+            {
+                foreach (Order o in kvp.Value.OrderHistory)
+                {
+                    if (o.TimeRecieved.Year == year)
+                    {
+                        monthDic[o.TimeRecieved.Month] += o.CalculateTotal();
+                    }
+                }
+            }
+            if (monthDic.Values.Sum() == 0)
+            {
+                Console.WriteLine("There were no orders this year.");
+            }
+            else
+            {
+                foreach (var entry in monthDic)
+                {
+                    string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(entry.Key);
+                    Console.WriteLine($"{monthName,-15}: ${entry.Value:0.00}");
+                }
+                Console.WriteLine($"Total: ${monthDic.Values.Sum():0.00}");
+            }
+            break;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+    
+
+
+}
 
 while (true)
 {
@@ -494,16 +563,22 @@ while (true)
     else if (opt == 2)
     {
         int count = 0;
+        Console.WriteLine("Golden Queue");
+        Console.WriteLine("================================================");
         foreach (Order o in goldOrderQueue)
         {
             Console.WriteLine(o);
             count++;
         }
+        Console.WriteLine("================================================");
+        Console.WriteLine("Regular Queue");
+        Console.WriteLine("================================================");
         foreach (Order o in regularOrderQueue)
         {
             Console.WriteLine(o);
             count++;
-        }        
+        }
+        Console.WriteLine("================================================");
         if (count == 0)
         {
             Console.WriteLine("Currently, there are no unfulfilled orders.");
@@ -566,7 +641,7 @@ while (true)
 
         //Creating a new pointcard object 
         PointCard newCard = new PointCard(0, 0);
-
+        newCustomer.Rewards = newCard;
         //Appending new data to customers.csv file
         using (StreamWriter sw = new StreamWriter("customers.csv", true))
         {
@@ -616,7 +691,7 @@ while (true)
                     if (ans == "Y")
                     {
                         continue;
-                    }
+                    }   
                     else if (ans == "N")
                     {
                         CustomerDic[custId].CurrentOrder = newOrder;
@@ -666,10 +741,14 @@ while (true)
         {
             Console.WriteLine(order);
         }
-        if (CustomerDic[id].CurrentOrder.IceCreamList.Count != 0)
+        if (CustomerDic[id].CurrentOrder != null)
         {
-            Console.WriteLine(CustomerDic[id].CurrentOrder);
+            if (CustomerDic[id].CurrentOrder.IceCreamList.Count != 0)
+            {
+                Console.WriteLine(CustomerDic[id].CurrentOrder);
+            }
         }
+        
     }
     //Question 6
     else if (opt == 6)
@@ -751,14 +830,11 @@ while (true)
     {
         Console.WriteLine("You do not have an order to modify. Place an order first.");
     }
-
-
 }
     //Advance Question 1
     //Advance Question 2
-
+    else if (opt == 8)
+    {
+        DisplayBreakDown(CustomerDic);
+    }
 }
-
-
-
-

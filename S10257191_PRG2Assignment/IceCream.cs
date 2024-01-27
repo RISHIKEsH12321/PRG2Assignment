@@ -184,7 +184,7 @@ namespace S10257191_PRG2Assignment
                     break;
             }
 
-            if (WaffleFlavour == "Red Velvet" && WaffleFlavour == "Charcoal" && WaffleFlavour == "Pandan")
+            if (WaffleFlavour == "Red Velvet" || WaffleFlavour == "Charcoal" || WaffleFlavour == "Pandan")
             { total += 3; }
             
 

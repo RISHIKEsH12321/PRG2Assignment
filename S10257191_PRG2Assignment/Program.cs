@@ -8,7 +8,6 @@ using System.Transactions;
 using System.Globalization;
 using System;
 
-
 //==========================================================
 // Student Number : S10241860
 // Student Name : Joseph Kwek Jun Yan
@@ -19,14 +18,14 @@ using System;
 Dictionary<int, Customer> CustomerDic = new Dictionary<int, Customer>();
 
 //Create flavor dictionary to store information of the flavors
-Dictionary<string, Flavour> FlavourDic = new Dictionary<string, Flavour>
+Dictionary<string, bool> FlavourDic = new Dictionary<string, bool>
 {
-    { "Vanilla", new Flavour("Vanilla", false, 0) },
-    { "Chocolate", new Flavour("Chocolate", false, 0) },
-    { "Strawberry", new Flavour("Strawberry", false, 0) },
-    { "Durian", new Flavour("Durian", true, 0) },
-    { "Ube", new Flavour("Ube", true, 0) },
-    { "Sea Salt", new Flavour("Sea salt", true, 0) },
+    { "Vanilla", false },
+    { "Chocolate", false },
+    { "Strawberry", false },
+    { "Durian", true },
+    { "Ube", true },
+    { "Sea Salt", true },
 };
 
 Queue<Order> regularOrderQueue = new Queue<Order>();
@@ -83,59 +82,37 @@ int InnitOrders(Dictionary<int, Customer> cusDic, int orderCount)
                 int OrderId = Convert.ToInt32(data[0]);
                 orderCount = OrderId;
                 int Memid = Convert.ToInt32(data[1]);
-                DateTime Recieved = Convert.ToDateTime(data[2]);
-                DateTime? fulfilled;
-                fulfilled = Convert.ToDateTime(data[3]);
+                DateTime Recieved = Convert.ToDateTime(data[2]);               
+                DateTime fulfilled = Convert.ToDateTime(data[3]);
 
                 string option = data[4];
                 int scoops = Convert.ToInt32(data[5]);
                 //Converted dipped in object creation
-                string? waffleFlavour = data[7];
-                Flavour flavour1 = FlavourDic[data[8]];
-                flavour1.Quantity++;
-                Flavour? flavour2 = null;
-                Flavour? flavour3 = null;
-                if (data[9] == "")
-                {
-                    data[9] = null;
-                }
-                if (data[10] == "")
-                {
-                    data[10] = null;
-                }
-                if (data[9] == data[8]) { flavour1.Quantity++; }
-                else
-                {
-                    if (flavour2 != null)
-                    {
-                        flavour2 = FlavourDic[data[9]];
-                        if (data[10] == flavour2.Type)
-                        {
-                            flavour2.Quantity++;
-                        }
-                    }
-                }
-                if (data[10] == data[8]) { flavour1.Quantity++; }
-                else
-                {
-                    if (flavour3 != null)
-                    {
-                        flavour3 = FlavourDic[data[10]];
-                        flavour3.Quantity++;
-                    }
-                }
+                string? waffleFlavour = data[7];                
                 List<Flavour> fList = new List<Flavour>();
-                fList.Add(flavour1);
-                if (flavour2 != null)
-                {
-                    flavour2.Quantity++;
-                    fList.Add(flavour2);
+                for (int i = 8; i <= 10; i++)
+                {                    
+                    if (!string.IsNullOrEmpty(data[i]))
+                    {
+                        bool inFlist = false;
+                        foreach (Flavour f in fList)
+                        {
+                            if (f.Type == data[i])
+                            {
+                                inFlist = true;
+                                f.Quantity++;
+                                break;
+                            }
+                        }
+                        if (!inFlist)
+                        {
+                            Flavour flavour = new Flavour(data[i], FlavourDic[data[i]], 0);
+                            flavour.Quantity++;
+                            fList.Add(flavour);
+                        }                                               
+                    }
                 }
-                if (flavour3 != null)
-                {
-                    flavour3.Quantity++;
-                    fList.Add(flavour3);
-                }
+
                 List<Topping> tList = new List<Topping>();
                 for (int i = 11; i < 15; i++)
                 {
@@ -153,6 +130,8 @@ int InnitOrders(Dictionary<int, Customer> cusDic, int orderCount)
                 {
                     bool dipped = Convert.ToBoolean(data[6]);
                     ic = new Cone(option, scoops, fList, tList, dipped);
+                    Console.WriteLine(dipped);
+                    Console.WriteLine(ic);
                 }
                 else
                 {
@@ -502,8 +481,8 @@ void DisplayBreakDown(Dictionary<int, Customer> CustomerDic)
         try
         {
             Console.Write("Enter the year: ");
-            int year = Convert.ToInt32(Console.ReadLine());
-            while (year < DateTime.MinValue.Year && year > DateTime.MaxValue.Year)
+            int year = Convert.ToInt32(Console.ReadLine());         
+            while (year < DateTime.MinValue.Year || year > DateTime.MaxValue.Year)
             {
                 Console.WriteLine("Invalid Input.");
                 Console.Write("Enter the year: ");
@@ -514,9 +493,9 @@ void DisplayBreakDown(Dictionary<int, Customer> CustomerDic)
             {
                 foreach (Order o in kvp.Value.OrderHistory)
                 {
-                    if (o.TimeRecieved.Year == year)
+                    if (o.TimeFulfilled.HasValue && o.TimeFulfilled.Value.Year == year)
                     {
-                        monthDic[o.TimeRecieved.Month] += o.CalculateTotal();
+                        monthDic[o.TimeFulfilled.Value.Month] += o.CalculateTotal();
                     }
                 }
             }
@@ -544,6 +523,9 @@ void DisplayBreakDown(Dictionary<int, Customer> CustomerDic)
 
 
 }
+
+
+
 
 while (true)
 {

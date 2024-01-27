@@ -83,7 +83,7 @@ namespace S10257191_PRG2Assignment
             {
                 if (flavour.Premium)
                 {
-                    total += 2;
+                    total += flavour.Quantity * 2;
                 }
             }
 
@@ -135,7 +135,7 @@ namespace S10257191_PRG2Assignment
             {
                 if (flavour.Premium)
                 {
-                    total += 2;
+                    total += flavour.Quantity * 2;
                 }
             }
 
@@ -148,7 +148,7 @@ namespace S10257191_PRG2Assignment
 
         public override string ToString()
         {
-            return $"{base.ToString()}Dipped: {dipped}\n";
+            return $"{base.ToString()}Dipped: {Dipped}\n";
         }
     }
 
@@ -174,26 +174,27 @@ namespace S10257191_PRG2Assignment
             switch (Scoop)
             {
                 case 1:
-                    total = 4.0;
+                    total = 7.0;
                     break;
                 case 2:
-                    total = 5.5;
+                    total = 8.5;
                     break;
                 case 3:
-                    total = 6.5;
+                    total = 9.5;
                     break;
             }
 
-            if (WaffleFlavour == "Red velvet" || WaffleFlavour == "Charcoal" || WaffleFlavour == "Pandan")
+            if (WaffleFlavour == "Red Velvet" && WaffleFlavour == "Charcoal" && WaffleFlavour == "Pandan")
             { total += 3; }
-            else { waffleFlavour = "Basic"; }
+            
 
             foreach (Flavour flavour in Flavours)
             {
                 if (flavour.Premium)
                 {
-                    total += 2;
+                    total += flavour.Quantity * 2;
                 }
+                
             }
 
             total += Toppings.Count();

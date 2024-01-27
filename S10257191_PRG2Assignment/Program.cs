@@ -112,7 +112,6 @@ int InnitOrders(Dictionary<int, Customer> cusDic, int orderCount)
                         }                                               
                     }
                 }
-
                 List<Topping> tList = new List<Topping>();
                 for (int i = 11; i < 15; i++)
                 {
@@ -130,8 +129,8 @@ int InnitOrders(Dictionary<int, Customer> cusDic, int orderCount)
                 {
                     bool dipped = Convert.ToBoolean(data[6]);
                     ic = new Cone(option, scoops, fList, tList, dipped);
-                    Console.WriteLine(dipped);
-                    Console.WriteLine(ic);
+                    //Console.WriteLine(dipped);
+                    //Console.WriteLine(ic);
                 }
                 else
                 {
@@ -523,8 +522,6 @@ void DisplayBreakDown(Dictionary<int, Customer> CustomerDic)
 
 
 }
-
-
 
 
 while (true)

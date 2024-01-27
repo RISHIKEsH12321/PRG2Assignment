@@ -37,7 +37,6 @@ int orderCount = 0;
 
 InnitCustomer(CustomerDic);
 orderCount = InnitOrders(CustomerDic, orderCount);
-Console.WriteLine("hey" + orderCount);
 orderCount++;
 
 void InnitCustomer(Dictionary<int, Customer> cusDic)
@@ -685,13 +684,10 @@ while (true)
                         if (CustomerDic[custId].Rewards.Tier == "Gold")
                         {
                             goldOrderQueue.Enqueue(CustomerDic[custId].CurrentOrder);
-                            Console.WriteLine(CustomerDic[custId].CurrentOrder);
-                            Console.WriteLine(goldOrderQueue.Count());
                         }
                         else
                         {
                             regularOrderQueue.Enqueue(CustomerDic[custId].CurrentOrder);
-                            Console.WriteLine(CustomerDic[custId].CurrentOrder);
                         }
                         break;
                     }

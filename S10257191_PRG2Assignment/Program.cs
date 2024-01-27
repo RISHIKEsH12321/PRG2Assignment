@@ -1,9 +1,12 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using S10257191_PRG2Assignment;
+using System;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Intrinsics.Arm;
 using System.Transactions;
+using System.Xml.Schema;
 
 //==========================================================
 // Student Number : S10241860
@@ -31,6 +34,7 @@ int orderCount = 0;
 
 InnitCustomer(CustomerDic);
 orderCount = InnitOrders(CustomerDic, orderCount);
+Console.WriteLine("hey" + orderCount);
 orderCount++;
 
 void InnitCustomer(Dictionary<int, Customer> cusDic)
@@ -48,10 +52,9 @@ void InnitCustomer(Dictionary<int, Customer> cusDic)
                 int id = Convert.ToInt32(data[1]);
                 DateTime dob = Convert.ToDateTime(data[2]);
                 cusDic.Add(id, new Customer(data[0], id, dob));
-                cusDic[id].Rewards = new PointCard();
                 cusDic[id].Rewards.Points = Convert.ToInt32(data[4]);
                 cusDic[id].Rewards.PunchCard = Convert.ToInt32(data[5]);
-                cusDic[id].Rewards.Tier = data[3];
+                cusDic[id].Rewards.Tier =Convert.ToString(data[3]);
             }
             catch
             {
@@ -596,9 +599,11 @@ while (true)
 
             if (CustomerDic.ContainsKey(custId))
             {
-                Order newOrder = CustomerDic[custId].MakeOrder();                
+                Order newOrder = CustomerDic[custId].MakeOrder();
+                Console.WriteLine(newOrder.Id);
                 newOrder.Id = orderCount;
                 orderCount++;
+                Console.WriteLine(orderCount);
                 newOrder.TimeRecieved = DateTime.Now;
                 while (true)
                 {
@@ -623,10 +628,13 @@ while (true)
                         if (CustomerDic[custId].Rewards.Tier == "Gold")
                         {
                             goldOrderQueue.Enqueue(CustomerDic[custId].CurrentOrder);
+                            Console.WriteLine(CustomerDic[custId].CurrentOrder);
+                            Console.WriteLine(goldOrderQueue.Count());
                         }
                         else
                         {
                             regularOrderQueue.Enqueue(CustomerDic[custId].CurrentOrder);
+                            Console.WriteLine(CustomerDic[custId].CurrentOrder);
                         }
                         break;
                     }
@@ -755,10 +763,107 @@ while (true)
 
 }
     //Advance Question 1
+    else if(opt == 7)
+    {
+        Console.WriteLine(goldOrderQueue.Count());
+        Console.WriteLine(regularOrderQueue.Count());
+
+        if (goldOrderQueue.Count() > 0)
+        {
+            List<IceCream> list = (goldOrderQueue.Dequeue().IceCreamList);
+            Console.WriteLine("Ice Cream order");
+            foreach (int k in CustomerDic.Keys)
+            {
+                if (CustomerDic[k].CurrentOrder.IceCreamList == list)
+                {
+                    Console.WriteLine(list);
+                    double total = CustomerDic[k].CurrentOrder.CalculateTotal();
+                    Console.WriteLine("Total: ${0}", total);
+                    Console.WriteLine("Membership Tier: {0}\n" +
+                                      "Points: {1}", CustomerDic[k].Rewards.Tier, CustomerDic[k].Rewards.Points);
+                    Console.WriteLine();
+                    if (CustomerDic[k].IsBirthday())
+                    {
+                        double amt = 0;
+                        foreach (IceCream iceCream in list)
+                        {
+                            if (iceCream.CalculatePrice() > amt)
+                            {
+                                amt = iceCream.CalculatePrice();
+                            }
+                        }
+                        total -= amt;
+                        Console.WriteLine("Happy Birthday!!!\n The most expensive ice cream in your order is on US!");
+                        Console.WriteLine("Total: ${0}", total);
+                        Console.WriteLine();   
+                    }
+                    if (CustomerDic[k].Rewards.PunchCard == 10)
+                    {
+                        CustomerDic[k].Rewards.PunchCard = 0;
+                        double amt = list[0].CalculatePrice();
+                        total -= amt;
+                        Console.WriteLine("You completed your punchcard\n The first ice cream in your order is FREE!");
+                        Console.WriteLine("Total: ${0}", total);
+                        Console.WriteLine();
+                    }
+                    if (CustomerDic[k].Rewards.Tier == "Sliver" || CustomerDic[k].Rewards.Tier == "Gold")
+                    {
+                        Console.WriteLine("1 point = $0.02");
+                        while (true)
+                        {
+                            try
+                            {
+                                Console.Write("How much points({0}) would you like to redeem (Enter '0' if you do not wish to redeem any): ", CustomerDic[k].Rewards.Points);
+                                int points = Convert.ToInt32(Console.ReadLine());
+                                if (points == 0) //End point redeeming prompt if user enter 0
+                                    break;
+                                else if (points < 0) //Prompt user again if input is less than 0
+                                {
+                                    Console.WriteLine("Please enter a valid integer between 1-{0}. '0' to not redeem any points", CustomerDic[k].Rewards.Points);
+                                    continue;
+                                }
+                                else if (points > CustomerDic[k].Rewards.Points) //Prompt user again if input is more than customer current points
+                                {
+                                    Console.WriteLine("You currently {0} points. Not enough to redeem {1} points", CustomerDic[k].Rewards.Points, points);
+                                    continue;
+                                }
+                                else //Redeem points
+                                {
+                                    double amt = points * 0.02;
+                                    Console.WriteLine("You have redeem ${0} using {1} points", amt, points);
+                                    total -= amt;
+                                    Console.WriteLine("Total: ${0}", total);
+                                    break;
+                                } 
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e.Message);
+                                continue;
+                            }
+                        }
+                    }
+                    int numOfIceCream = list.Count(); //Counting the number of ice cream in order
+                    CustomerDic[k].Rewards.PunchCard = numOfIceCream; //Adding count to punchcard
+                    if (CustomerDic[k].Rewards.PunchCard > 10)
+                    {
+                        CustomerDic[k].Rewards.PunchCard = 10; //Limit punchcard to 10 if exceeded
+                    }
+                    //Calculate the points earned and adding to customer points
+                    double earnedPoints = Math.Floor(total * 0.72);
+                    CustomerDic[k].Rewards.Points += Convert.ToInt32(earnedPoints);
+                    //Checking if eligible to promote customer membership status
+                    if (CustomerDic[k].Rewards.Points >= 50 && CustomerDic[k].Rewards.Tier == "Ordinary" && CustomerDic[k].Rewards.Tier != "Gold")
+                    {
+                        CustomerDic[k].Rewards.Tier = "Silver";
+                    }
+                    else if (CustomerDic[k].Rewards.Points >= 50 && CustomerDic[k].Rewards.Tier == "Silver")
+                    {
+                        CustomerDic[k].Rewards.Tier = "Gold";
+                    }
+                }
+            }
+        }
+    }
     //Advance Question 2
-
 }
-
-
-
-

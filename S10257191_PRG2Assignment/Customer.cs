@@ -24,6 +24,7 @@ namespace S10257191_PRG2Assignment
             MemberId = memberId;
             DOB = dob;
             OrderHistory = new List<Order>();
+            Rewards = new PointCard();
         }
 
         //Methods

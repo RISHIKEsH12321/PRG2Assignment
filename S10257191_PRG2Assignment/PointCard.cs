@@ -14,21 +14,7 @@ namespace S10257191_PRG2Assignment
 
         public int Points { get; set; }
         public int PunchCard { get; set; }
-        public string Tier
-        {
-            get { return tier; }
-            set
-            {
-                if (Points >= 50 && Tier == "Ordinary" && Tier != "Gold")
-                {
-                    tier = "Silver";
-                }
-                else if (Points >= 50 && Tier == "Silver")
-                {
-                    tier = "Gold";
-                }
-            }
-        }
+        public string Tier { get; set; }
 
         public PointCard() { }
 

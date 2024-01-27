@@ -15,7 +15,6 @@ namespace S10257191_PRG2Assignment
         public int Points { get; set; }
         public int PunchCard { get; set; }
         public string Tier { get; set; }
-        
 
         public PointCard() { }
 

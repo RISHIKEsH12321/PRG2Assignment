@@ -529,7 +529,7 @@ void DisplayBreakDown(Dictionary<int, Customer> CustomerDic)
 while (true)
 {
     DisplayMenu();
-    int opt = DataValidationInt("Enter your option: ", new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8 }); 
+    int opt = DataValidationInt("Enter your option: ", new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8 });
     if (opt == 0)
     {
         Console.WriteLine("Exiting...");
@@ -662,17 +662,17 @@ while (true)
                     newOrder.AddIceCream(newIceCream);                                              //Adding ice cream to order
                     Console.Write("Would you like to add another ice cream to the order? (Y/N): ");//Asking user if they make to make another ice 
                     string ans = Console.ReadLine().ToUpper();
-                    while (ans != "Y" && ans!= "N")  
+                    while (ans != "Y" && ans != "N")
                     {
                         Console.WriteLine("Invalid input");
                         Console.Write("Would you like to add another ice cream to the order? (Y/N): ");
                         ans = Console.ReadLine().ToUpper();
                     }
-                    
+
                     if (ans == "Y")
                     {
                         continue;
-                    }   
+                    }
                     else if (ans == "N")
                     {
                         CustomerDic[custId].CurrentOrder = newOrder;
@@ -698,7 +698,7 @@ while (true)
             Console.WriteLine("Order added successfully!");
             break;
         }
- 
+
     }
 
     //Question 5
@@ -729,110 +729,210 @@ while (true)
                 Console.WriteLine(CustomerDic[id].CurrentOrder);
             }
         }
-        
+
     }
     //Question 6
     else if (opt == 6)
-{
-    foreach (KeyValuePair<int, Customer> customer in CustomerDic)
     {
-        Console.WriteLine($"{customer.Value.MemberId}: {customer.Value.Name}");
-    }
+        foreach (KeyValuePair<int, Customer> customer in CustomerDic)
+        {
+            Console.WriteLine($"{customer.Value.MemberId}: {customer.Value.Name}");
+        }
 
-    int id;
-    Console.Write("Enter your Customer ID: ");
-    id = Convert.ToInt32(Console.ReadLine());
-    while (!CustomerDic.ContainsKey(id))
-    {
-        Console.WriteLine("Invalid Id.");
+        int id;
         Console.Write("Enter your Customer ID: ");
         id = Convert.ToInt32(Console.ReadLine());
-    }
-
-    if (CustomerDic[id].CurrentOrder != null)
-    {
-        Order CurrentOrder = CustomerDic[id].CurrentOrder;
-
-
-        Console.WriteLine(
-            "Modify Order Details:\r\n" +
-            "[1] Choose Ice Cream to Modify\r\n" +
-            "[2] Add New Ice Cream\r\n" +
-            "[3] Remove Ice Cream from your Order");
-
-        int Option6Option;
-
-        while (true)
+        while (!CustomerDic.ContainsKey(id))
         {
-            try
+            Console.WriteLine("Invalid Id.");
+            Console.Write("Enter your Customer ID: ");
+            id = Convert.ToInt32(Console.ReadLine());
+        }
+
+        if (CustomerDic[id].CurrentOrder != null)
+        {
+            Order CurrentOrder = CustomerDic[id].CurrentOrder;
+
+
+            Console.WriteLine(
+                "Modify Order Details:\r\n" +
+                "[1] Choose Ice Cream to Modify\r\n" +
+                "[2] Add New Ice Cream\r\n" +
+                "[3] Remove Ice Cream from your Order");
+
+            int Option6Option;
+
+            while (true)
             {
-                Console.Write("Enter your option: ");
-                Option6Option = DataValidationInt("Enter your option: ",
-                    new List<int> { 1, 2, 3 });
-                switch (Option6Option)
+                try
                 {
-                    case 1:
-                        int count = 1;
-                        foreach (IceCream ic in CurrentOrder.IceCreamList)
-                        {
-                            Console.WriteLine($"[{count}]: \n{ic}");
-                            count++;
-                        }
-                        Console.Write("Enter which Ice Cream you want to change: ");
-                        int ChangeIceCreamID = Convert.ToInt16(Console.ReadLine());
-                        CurrentOrder.ModifyIceCream(ChangeIceCreamID);
-                        break;
-                    case 2:
-                        IceCream NewIceCream = CreateIceCream();
-                        CurrentOrder.AddIceCream(NewIceCream);
-                        Console.WriteLine(NewIceCream);
-                        break;
+                    Console.Write("Enter your option: ");
+                    Option6Option = DataValidationInt("Enter your option: ",
+                        new List<int> { 1, 2, 3 });
+                    switch (Option6Option)
+                    {
+                        case 1:
+                            int count = 1;
+                            foreach (IceCream ic in CurrentOrder.IceCreamList)
+                            {
+                                Console.WriteLine($"[{count}]: \n{ic}");
+                                count++;
+                            }
+                            Console.Write("Enter which Ice Cream you want to change: ");
+                            int ChangeIceCreamID = Convert.ToInt16(Console.ReadLine());
+                            CurrentOrder.ModifyIceCream(ChangeIceCreamID);
+                            break;
+                        case 2:
+                            IceCream NewIceCream = CreateIceCream();
+                            CurrentOrder.AddIceCream(NewIceCream);
+                            Console.WriteLine(NewIceCream);
+                            break;
 
-                    case 3:
-                        foreach (IceCream ic in CurrentOrder.IceCreamList)
-                        {
-                            Console.WriteLine(ic);
-                        }
-                        Console.Write("Enter which Ice Cream you want to Delete: ");
-                        int DeleteIceCreamID = Convert.ToInt16(Console.ReadLine());
-                        CurrentOrder.DeleteIceCream(DeleteIceCreamID);
-                        break;
+                        case 3:
+                            foreach (IceCream ic in CurrentOrder.IceCreamList)
+                            {
+                                Console.WriteLine(ic);
+                            }
+                            Console.Write("Enter which Ice Cream you want to Delete: ");
+                            int DeleteIceCreamID = Convert.ToInt16(Console.ReadLine());
+                            CurrentOrder.DeleteIceCream(DeleteIceCreamID);
+                            break;
+                    }
+                    break;
                 }
-                break;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
 
+            }
+        }
+        else
+        {
+            Console.WriteLine("You do not have an order to modify. Place an order first.");
         }
     }
-    else
-    {
-        Console.WriteLine("You do not have an order to modify. Place an order first.");
-    }
-}
     //Advance Question 1
-    else if(opt == 7)
+    else if (opt == 7)
     {
-        Console.WriteLine(goldOrderQueue.Count());
-        Console.WriteLine(regularOrderQueue.Count());
-
         if (goldOrderQueue.Count() > 0)
         {
             List<IceCream> list = (goldOrderQueue.Dequeue().IceCreamList);
             Console.WriteLine("Ice Cream order");
             foreach (int k in CustomerDic.Keys)
-            {
-                if (CustomerDic[k].CurrentOrder.IceCreamList == list)
+            {   
+                if (CustomerDic[k].CurrentOrder == null)
+                {
+                    continue;
+                }
+                else if (CustomerDic[k].CurrentOrder.IceCreamList == list)
                 {
                     Console.WriteLine(CustomerDic[k].CurrentOrder);
                     double total = CustomerDic[k].CurrentOrder.CalculateTotal();
-                    Console.WriteLine("Total: ${0}", total);
                     Console.WriteLine("Membership Tier: {0}\n" +
                                       "Points: {1}", CustomerDic[k].Rewards.Tier, CustomerDic[k].Rewards.Points);
                     Console.WriteLine();
-                    if (CustomerDic[k].IsBirthday())
+                    if (CustomerDic[k].IsBirthday() && !(total <= 0)) //Check whether it is the customers birthday
+                    {                                                //and total cost is not less than or equal zero
+                        double amt = 0;
+                        foreach (IceCream iceCream in list)
+                        {
+                            if (iceCream.CalculatePrice() > amt)
+                            {
+                                amt = iceCream.CalculatePrice();
+                            }
+                        }
+                        total -= amt;
+                        Console.WriteLine("Happy Birthday!!!\n The most expensive ice cream in your order is on US!");
+                        Console.WriteLine("Total: ${0:0.00}", total);
+                        Console.WriteLine();
+                    }
+                    if (CustomerDic[k].Rewards.PunchCard == 10 && !(total <= 0)) //Check whether it is the customers has 10 punchcard
+                    {                                                            //and total cost is not less than or equal zero
+                        CustomerDic[k].Rewards.PunchCard = 0;
+                        double amt = list[0].CalculatePrice();
+                        total -= amt;
+                        Console.WriteLine("You completed your punchcard\n" +
+                                          "The first ice cream in your order is FREE!");
+                        Console.WriteLine("Total: ${0:0.00}", total);
+                        Console.WriteLine();
+                    }
+                    if (!(total <= 0))
+                    {
+                        Console.WriteLine("1 point = $0.02");
+                        while (true)
+                        {
+                            try
+                            {
+                                Console.Write("How much points({0}) would you like to redeem (Enter '0' if you do not wish to redeem any): ", CustomerDic[k].Rewards.Points);
+                                int points = Convert.ToInt32(Console.ReadLine());
+                                if (points == 0) //End point redeeming prompt if user enter 0
+                                {
+                                    Console.WriteLine("Total: ${0:0.00}", total);
+                                    break;
+                                }
+                                else if (points < 0) //Prompt user again if input is less than 0
+                                {
+                                    Console.WriteLine("Please enter a valid integer between 1-{0}. '0' to not redeem any points", CustomerDic[k].Rewards.Points);
+                                    continue;
+                                }
+                                else if (points > CustomerDic[k].Rewards.Points) //Prompt user again if input is more than customer current points
+                                {
+                                    Console.WriteLine("You currently {0} points. Not enough to redeem {1} points", CustomerDic[k].Rewards.Points, points);
+                                    continue;
+                                }
+                                else //Redeem points
+                                {
+                                    double amt = points * 0.02;
+                                    Console.WriteLine("You have redeem ${0} using {1} points", amt, points);
+                                    total -= amt;
+                                    Console.WriteLine("Total: ${0:0.00}", total);
+                                    break;
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e.Message);
+                                continue;
+                            }
+                        }
+                    }
+                    int numOfIceCream = CustomerDic[k].CurrentOrder.IceCreamList.Count(); //Counting the number of ice cream in order
+                    CustomerDic[k].Rewards.PunchCard = numOfIceCream; //Adding count to punchcard
+                    if (CustomerDic[k].Rewards.PunchCard > 10)
+                    {
+                        CustomerDic[k].Rewards.PunchCard = 10; //Limit punchcard to 10 if exceeded 10
+                    }
+                    //Calculate the points earned and adding to customer points
+                    double earnedPoints = Math.Floor(total * 0.72);
+                    CustomerDic[k].Rewards.Points += Convert.ToInt32(earnedPoints);
+                    //Adding time of fulfilled order
+                    CustomerDic[k].CurrentOrder.TimeFulfilled = DateTime.Now;
+                    //Adding the fulfilled order to order history
+                    CustomerDic[k].OrderHistory.Add(CustomerDic[k].CurrentOrder);
+                    
+                    break;
+                }
+            }
+        }
+        else if (regularOrderQueue.Count() > 0)
+        {
+            List<IceCream> list = (regularOrderQueue.Dequeue().IceCreamList);
+            Console.WriteLine("Ice Cream order");
+            foreach (int k in CustomerDic.Keys)
+            {
+                if (CustomerDic[k].CurrentOrder == null)
+                {
+                    continue;
+                }
+                else if (CustomerDic[k].CurrentOrder.IceCreamList == list)
+                {
+                    Console.WriteLine(CustomerDic[k].CurrentOrder);
+                    double total = CustomerDic[k].CurrentOrder.CalculateTotal();
+                    Console.WriteLine("Membership Tier: {0}\n" +
+                                      "Points: {1}", CustomerDic[k].Rewards.Tier, CustomerDic[k].Rewards.Points);
+                    Console.WriteLine();
+                    if (CustomerDic[k].IsBirthday() && !(total <= 0))
                     {
                         double amt = 0;
                         foreach (IceCream iceCream in list)
@@ -845,9 +945,9 @@ while (true)
                         total -= amt;
                         Console.WriteLine("Happy Birthday!!!\n The most expensive ice cream in your order is on US!");
                         Console.WriteLine("Total: ${0}", total);
-                        Console.WriteLine();   
+                        Console.WriteLine();
                     }
-                    if (CustomerDic[k].Rewards.PunchCard == 10)
+                    if (CustomerDic[k].Rewards.PunchCard == 10 && !(total <= 0))
                     {
                         CustomerDic[k].Rewards.PunchCard = 0;
                         double amt = list[0].CalculatePrice();
@@ -856,7 +956,7 @@ while (true)
                         Console.WriteLine("Total: ${0}", total);
                         Console.WriteLine();
                     }
-                    if (CustomerDic[k].Rewards.Tier == "Sliver" || CustomerDic[k].Rewards.Tier == "Gold")
+                    if (CustomerDic[k].Rewards.Tier == "Sliver" && !(total <= 0))
                     {
                         Console.WriteLine("1 point = $0.02");
                         while (true)
@@ -887,7 +987,7 @@ while (true)
                                     total -= amt;
                                     Console.WriteLine("Total: ${0}", total);
                                     break;
-                                } 
+                                }
                             }
                             catch (Exception e)
                             {
@@ -910,13 +1010,21 @@ while (true)
                     {
                         CustomerDic[k].Rewards.Tier = "Silver";
                     }
-                    else if (CustomerDic[k].Rewards.Points >= 50 && CustomerDic[k].Rewards.Tier == "Silver")
+                    else if (CustomerDic[k].Rewards.Points >= 100 && CustomerDic[k].Rewards.Tier == "Silver")
                     {
                         CustomerDic[k].Rewards.Tier = "Gold";
                     }
+                    //Adding time of fulfilled order
+                    CustomerDic[k].CurrentOrder.TimeFulfilled = DateTime.Now;
+                    //Adding the fulfilled order to order history
+                    CustomerDic[k].OrderHistory.Add(CustomerDic[k].CurrentOrder);
                     break;
                 }
             }
+        }
+        else
+        {
+            Console.WriteLine("No order to process");
         }
     }
     //Advance Question 2

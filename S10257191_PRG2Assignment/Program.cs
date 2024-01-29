@@ -549,6 +549,127 @@ void DisplayBreakDown(Dictionary<int, Customer> CustomerDic)
 
 }
 
+string appendFlavour(IceCream ice)
+{
+    Console.WriteLine(ice.Scoop);
+    string order;
+    if (ice.Scoop == 1)
+    {
+        order = "," + ice.Flavours[0].Type +",,";
+        return order;
+    }
+    else if (ice.Scoop == 2)
+    {
+        if (ice.Flavours[0].Quantity == 2)
+        {
+            order = "," + ice.Flavours[0].Type + "," + ice.Flavours[0].Type + ",";
+            return order;
+        }
+        else
+        {
+            order = "," + ice.Flavours[0].Type + "," + ice.Flavours[1].Type + ",";
+            return order;
+        }
+    }
+    else if (ice.Scoop == 3)
+    {
+        Console.WriteLine(ice.Flavours.Count() + "Shouldbe 3");
+        if (ice.Flavours.Count() == 3)
+        {
+            order = "," + ice.Flavours[0].Type + "," + ice.Flavours[1].Type + "," + ice.Flavours[2].Type;
+            return order;
+        }
+        else if (ice.Flavours.Count() == 2)
+        {
+            if (ice.Flavours[0].Quantity == 2)
+            {
+                order = "," + ice.Flavours[0].Type + "," + ice.Flavours[0].Type + "," + ice.Flavours[1].Type;
+                return order;
+            }
+            else
+            {
+                order = "," + ice.Flavours[0].Type + "," + ice.Flavours[1].Type + "," + ice.Flavours[1].Type;
+                return order;
+            }
+        }
+        else
+        {
+            order = "," + ice.Flavours[0].Type + "," + ice.Flavours[0].Type + "," + ice.Flavours[0].Type;
+            return order; ;
+        }
+    }
+    else
+    {
+        return ",,,";
+    }
+
+}
+string appendToppings(IceCream ice)
+{
+    string order;
+    if (ice.Toppings.Count() == 1)
+    {
+        order = "," + ice.Toppings + ",,,";
+        return order;
+    }
+    else if (ice.Toppings.Count() == 2)
+    {
+        order = "," + ice.Toppings[0] + "," + ice.Toppings[1] + ",,";
+        return order;
+    }
+    else if (ice.Toppings.Count() == 3)
+    {
+        order = "," + ice.Toppings[0] + "," + ice.Toppings[1] + "," + ice.Toppings[2] + ",";
+        return order;
+    }
+    else if (ice.Toppings.Count() == 4)
+    {
+        order = "," + ice.Toppings[0] + "," + ice.Toppings[1] + "," + ice.Toppings[2] + "," + ice.Toppings[3];
+        return order;
+    }
+    else
+        return ",,,,";
+}
+void appendOrder(Customer cust)
+{
+    string order;
+    using (StreamWriter sw = new StreamWriter("orders.csv", true))
+    {
+        sw.WriteLine("\n");
+        foreach (IceCream ice in cust.CurrentOrder.IceCreamList)
+        {
+            order = cust.CurrentOrder.Id + "," + cust.MemberId + "," + cust.CurrentOrder.TimeRecieved + "," + cust.CurrentOrder.TimeFulfilled;
+            if (ice.Option == "Cup")
+            {
+                order += "," + ice.Option + "," + ice.Scoop + ",,";
+                order += appendFlavour(ice);
+                Console.WriteLine(order);
+                order += appendToppings(ice);
+                Console.WriteLine(order);
+
+                sw.WriteLine(order);
+            }
+            else if (ice.Option == "Cone")
+            {
+                Cone c = (Cone)ice;
+                order += "," + c.Option + "," + c.Scoop + "," + c.Dipped + ",";
+                order += appendFlavour(ice);
+                order += appendToppings(ice);
+
+                sw.WriteLine(order);
+            }
+            else if (ice.Option == "Waffle")
+            {
+                Waffle w = (Waffle)ice;
+                order += "," + w.Option + "," + w.Scoop + ",," + w.WaffleFlavour;
+                order += appendFlavour(ice);
+                order += appendToppings(ice);
+
+                sw.WriteLine(order);
+            }
+        }
+    }
+}
 
 while (true)
 {
@@ -940,6 +1061,7 @@ while (true)
                     CustomerDic[k].Rewards.Points += Convert.ToInt32(earnedPoints);
                     //Adding time of fulfilled order
                     CustomerDic[k].CurrentOrder.TimeFulfilled = DateTime.Now;
+                    appendOrder(CustomerDic[k]); //Appending currentorder to order.csv
                     //Creating Final Total
                     CustomerDic[k].CurrentOrder.FinalTotal = total;
                     //Adding the fulfilled order to order history
@@ -1052,6 +1174,7 @@ while (true)
                     }
                     //Adding time of fulfilled order
                     CustomerDic[k].CurrentOrder.TimeFulfilled = DateTime.Now;
+                    appendOrder(CustomerDic[k]); //Appending currentorder to order.csv
                     //Creating Final Total
                     CustomerDic[k].CurrentOrder.FinalTotal = total;
                     //Adding the fulfilled order to order history

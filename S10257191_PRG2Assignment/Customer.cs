@@ -37,7 +37,10 @@ namespace S10257191_PRG2Assignment
         }
         public bool IsBirthday()
         {
-            if (DOB == DateTime.Now)
+            int tdyMonth = DateTime.Now.Month;
+            int tdyDay = DateTime.Now.Day;
+
+            if (DOB.Day == tdyDay && DOB.Month == tdyMonth)
             {
                 return true;
             }

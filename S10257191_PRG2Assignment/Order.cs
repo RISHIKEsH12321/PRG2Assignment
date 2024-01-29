@@ -15,6 +15,7 @@ namespace S10257191_PRG2Assignment
         private DateTime timeRecieved;
         private DateTime? timeFulfilled;
         private List<IceCream> iceCreamList;
+        private double finalTotal;
 
         public int Id { get; set; }
         public DateTime TimeRecieved { get; set; }
@@ -22,6 +23,8 @@ namespace S10257191_PRG2Assignment
 
         public List<IceCream> IceCreamList { get; set; }
         = new List<IceCream>();
+
+        public double FinalTotal { get; set; }
         public Order() { }
 
         public Order(int id, DateTime recieved)
@@ -636,7 +639,12 @@ namespace S10257191_PRG2Assignment
             {
                 result += $"{ic}\n";
             }
-            result += $"Total: {CalculateTotal(): 0.00}";
+            if (FinalTotal != 0)
+            {
+                result += $"Total: {FinalTotal: 0.00}";
+            }
+            else { result += $"Total: {CalculateTotal(): 0.00}"; }
+            
             return result;
         }
     }

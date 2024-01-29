@@ -141,12 +141,13 @@ int InnitOrders(Dictionary<int, Customer> cusDic, int orderCount)
                                                 
                 Order pOrder = new Order(OrderId, Recieved);
                 pOrder.TimeFulfilled = fulfilled;
+                
                 bool check = true;
                 foreach (Order order in cusDic[Memid].OrderHistory)
                 {
                     if (order.Id == OrderId)
                     {
-                        order.IceCreamList.Add(ic);
+                        order.IceCreamList.Add(ic);                        
                         check = false;
                         break;
                     }
@@ -158,12 +159,15 @@ int InnitOrders(Dictionary<int, Customer> cusDic, int orderCount)
                 }
                 orderCount = OrderId;
             }
-
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);                
             }   
         }
+    }
+    foreach (Customer c in cusDic.Values)
+    {
+        foreach(Order o in c.OrderHistory) { o.FinalTotal = o.CalculateTotal(); }
     }
     return orderCount;
 }
@@ -461,6 +465,23 @@ IceCream CreateIceCream()
 }
 void DisplayBreakDown(Dictionary<int, Customer> CustomerDic)
 {
+    /*double IsBirthDay(Order order, int day, int month)
+    {
+        double discount = 0;
+        if (order.TimeFulfilled.HasValue && order.TimeFulfilled.Value.Day == day && order.TimeFulfilled.Value.Month == month)
+        {
+            foreach (IceCream ic in order.IceCreamList)
+            {
+                if (ic.CalculatePrice() > discount)
+                {
+                    discount = ic.CalculatePrice();
+                }
+            }
+        }
+        return discount;
+    }
+    */
+    
     Dictionary<int, double> monthDic = new Dictionary<int, double>
     {
         {1,0},
@@ -491,12 +512,15 @@ void DisplayBreakDown(Dictionary<int, Customer> CustomerDic)
             }
 
             foreach (var kvp in CustomerDic)
-            {
+            {                 
                 foreach (Order o in kvp.Value.OrderHistory)
                 {
                     if (o.TimeFulfilled.HasValue && o.TimeFulfilled.Value.Year == year)
                     {
-                        monthDic[o.TimeFulfilled.Value.Month] += o.CalculateTotal();
+                        monthDic[o.TimeFulfilled.Value.Month] += o.FinalTotal;
+                        Console.WriteLine(o.FinalTotal);
+                        //monthDic[o.TimeFulfilled.Value.Month] += o.FinalTotal;
+                        //monthDic[o.TimeFulfilled.Value.Month] -= IsBirthDay(o, kvp.Value.DOB.Day, kvp.Value.DOB.Month);
                     }
                 }
             }
@@ -591,6 +615,12 @@ while (true)
                 //Retrieving ID
                 Console.Write("Enter your id number:");
                 id = Convert.ToInt32(Console.ReadLine());
+                while (CustomerDic.ContainsKey(id))
+                {
+                    Console.WriteLine("Customer with that ID already exists.");
+                    Console.Write("Enter your id number:");
+                    id = Convert.ToInt32(Console.ReadLine());
+                }
             }
             catch (Exception ex)
             {
@@ -868,7 +898,7 @@ while (true)
                                 int points = Convert.ToInt32(Console.ReadLine());
                                 if (points == 0) //End point redeeming prompt if user enter 0
                                 {
-                                    Console.WriteLine("Total: ${0:0.00}", total);
+                                    Console.WriteLine("Total: ${0:0.00}", total);                                  
                                     break;
                                 }
                                 else if (points < 0) //Prompt user again if input is less than 0
@@ -908,6 +938,8 @@ while (true)
                     CustomerDic[k].Rewards.Points += Convert.ToInt32(earnedPoints);
                     //Adding time of fulfilled order
                     CustomerDic[k].CurrentOrder.TimeFulfilled = DateTime.Now;
+                    //Creating Final Total
+                    CustomerDic[k].CurrentOrder.FinalTotal = total;
                     //Adding the fulfilled order to order history
                     CustomerDic[k].OrderHistory.Add(CustomerDic[k].CurrentOrder);
                     
@@ -1016,6 +1048,8 @@ while (true)
                     }
                     //Adding time of fulfilled order
                     CustomerDic[k].CurrentOrder.TimeFulfilled = DateTime.Now;
+                    //Creating Final Total
+                    CustomerDic[k].CurrentOrder.FinalTotal = total;
                     //Adding the fulfilled order to order history
                     CustomerDic[k].OrderHistory.Add(CustomerDic[k].CurrentOrder);
                     break;

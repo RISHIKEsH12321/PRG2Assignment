@@ -927,6 +927,8 @@ while (true)
                             }
                         }
                     }
+                    Console.WriteLine("Press any key to continue");
+                    Console.ReadKey();
                     int numOfIceCream = CustomerDic[k].CurrentOrder.IceCreamList.Count(); //Counting the number of ice cream in order
                     CustomerDic[k].Rewards.PunchCard = numOfIceCream; //Adding count to punchcard
                     if (CustomerDic[k].Rewards.PunchCard > 10)
@@ -1028,6 +1030,8 @@ while (true)
                             }
                         }
                     }
+                    Console.WriteLine("Press any key to continue");
+                    Console.ReadKey();
                     int numOfIceCream = CustomerDic[k].CurrentOrder.IceCreamList.Count(); //Counting the number of ice cream in order
                     CustomerDic[k].Rewards.PunchCard = numOfIceCream; //Adding count to punchcard
                     if (CustomerDic[k].Rewards.PunchCard > 10)

@@ -213,23 +213,15 @@ void DisplayMenu()
                       "===============================================\n");
 }
 
+
 void ListCustomers()
 {
-    using (StreamReader sr = new StreamReader("customers.csv"))
+    Console.WriteLine("{0,-10} {1,-10} {2,-15} {3,-20} {4,-20} {5,-10}",
+                "Name", "MemberID", "DOB", "Membership Status", "Points", "Punchcard");
+    foreach (Customer customer in CustomerDic.Values)
     {
-        string? s = sr.ReadLine();
-        if (s != null)
-        {
-            string[] heading = s.Split(',');
-            Console.WriteLine("{0,-10} {1,-10} {2,-15} {3,-20} {4,-20} {5,-10}",
-                heading[0], heading[1], heading[2], heading[3], heading[4], heading[5]);
-        }
-        while ((s = sr.ReadLine()) != null)
-        {
-            string[] customer = s.Split(',');
-            Console.WriteLine("{0,-10} {1,-10} {2,-15} {3,-20} {4,-20} {5,-10}",
-                customer[0], customer[1], customer[2], customer[3], customer[4], customer[5]);
-        }
+        Console.WriteLine("{0,-10} {1,-10} {2,-15} {3,-20} {4,-20} {5,-10}",
+                customer.Name, customer.MemberId, customer.DOB.ToString("dd/MM/yyyy"), customer.Rewards.Tier, customer.Rewards.Points, customer.Rewards.PunchCard);
     }
     Console.WriteLine();
 }
@@ -549,6 +541,123 @@ void DisplayBreakDown(Dictionary<int, Customer> CustomerDic)
 
 }
 
+string appendFlavour(IceCream ice)
+{
+    string order;
+    if (ice.Scoop == 1)
+    {
+        order = "," + ice.Flavours[0].Type +",,";
+        return order;
+    }
+    else if (ice.Scoop == 2)
+    {
+        if (ice.Flavours[0].Quantity == 2)
+        {
+            order = "," + ice.Flavours[0].Type + "," + ice.Flavours[0].Type + ",";
+            return order;
+        }
+        else
+        {
+            order = "," + ice.Flavours[0].Type + "," + ice.Flavours[1].Type + ",";
+            return order;
+        }
+    }
+    else if (ice.Scoop == 3)
+    {
+        if (ice.Flavours.Count() == 3)
+        {
+            order = "," + ice.Flavours[0].Type + "," + ice.Flavours[1].Type + "," + ice.Flavours[2].Type;
+            return order;
+        }
+        else if (ice.Flavours.Count() == 2)
+        {
+            if (ice.Flavours[0].Quantity == 2)
+            {
+                order = "," + ice.Flavours[0].Type + "," + ice.Flavours[0].Type + "," + ice.Flavours[1].Type;
+                return order;
+            }
+            else
+            {
+                order = "," + ice.Flavours[0].Type + "," + ice.Flavours[1].Type + "," + ice.Flavours[1].Type;
+                return order;
+            }
+        }
+        else
+        {
+            order = "," + ice.Flavours[0].Type + "," + ice.Flavours[0].Type + "," + ice.Flavours[0].Type;
+            return order; ;
+        }
+    }
+    else
+    {
+        return ",,,";
+    }
+
+}
+string appendToppings(IceCream ice)
+{
+    string order;
+    if (ice.Toppings.Count() == 1)
+    {
+        order = "," + ice.Toppings + ",,,";
+        return order;
+    }
+    else if (ice.Toppings.Count() == 2)
+    {
+        order = "," + ice.Toppings[0] + "," + ice.Toppings[1] + ",,";
+        return order;
+    }
+    else if (ice.Toppings.Count() == 3)
+    {
+        order = "," + ice.Toppings[0] + "," + ice.Toppings[1] + "," + ice.Toppings[2] + ",";
+        return order;
+    }
+    else if (ice.Toppings.Count() == 4)
+    {
+        order = "," + ice.Toppings[0] + "," + ice.Toppings[1] + "," + ice.Toppings[2] + "," + ice.Toppings[3];
+        return order;
+    }
+    else
+        return ",,,,";
+}
+void appendOrder(Customer cust)
+{
+    string order;
+    using (StreamWriter sw = new StreamWriter("orders.csv", true))
+    {
+        sw.WriteLine("\n");
+        foreach (IceCream ice in cust.CurrentOrder.IceCreamList)
+        {
+            order = cust.CurrentOrder.Id + "," + cust.MemberId + "," + cust.CurrentOrder.TimeRecieved + "," + cust.CurrentOrder.TimeFulfilled;
+            if (ice.Option == "Cup")
+            {
+                order += "," + ice.Option + "," + ice.Scoop + ",,";
+                order += appendFlavour(ice);
+                order += appendToppings(ice);
+
+                sw.WriteLine(order);
+            }
+            else if (ice.Option == "Cone")
+            {
+                Cone c = (Cone)ice;
+                order += "," + c.Option + "," + c.Scoop + "," + c.Dipped + ",";
+                order += appendFlavour(ice);
+                order += appendToppings(ice);
+
+                sw.WriteLine(order);
+            }
+            else if (ice.Option == "Waffle")
+            {
+                Waffle w = (Waffle)ice;
+                order += "," + w.Option + "," + w.Scoop + ",," + w.WaffleFlavour;
+                order += appendFlavour(ice);
+                order += appendToppings(ice);
+
+                sw.WriteLine(order);
+            }
+        }
+    }
+}
 
 while (true)
 {
@@ -913,6 +1022,7 @@ while (true)
                                 }
                                 else //Redeem points
                                 {
+                                    CustomerDic[k].Rewards.Points -= points;
                                     double amt = points * 0.02;
                                     Console.WriteLine("You have redeem ${0} using {1} points", amt, points);
                                     total -= amt;
@@ -927,6 +1037,8 @@ while (true)
                             }
                         }
                     }
+                    Console.WriteLine("Press any key to continue");
+                    Console.ReadKey();
                     int numOfIceCream = CustomerDic[k].CurrentOrder.IceCreamList.Count(); //Counting the number of ice cream in order
                     CustomerDic[k].Rewards.PunchCard = numOfIceCream; //Adding count to punchcard
                     if (CustomerDic[k].Rewards.PunchCard > 10)
@@ -938,6 +1050,7 @@ while (true)
                     CustomerDic[k].Rewards.Points += Convert.ToInt32(earnedPoints);
                     //Adding time of fulfilled order
                     CustomerDic[k].CurrentOrder.TimeFulfilled = DateTime.Now;
+                    appendOrder(CustomerDic[k]); //Appending currentorder to order.csv
                     //Creating Final Total
                     CustomerDic[k].CurrentOrder.FinalTotal = total;
                     //Adding the fulfilled order to order history
@@ -1014,6 +1127,7 @@ while (true)
                                 }
                                 else //Redeem points
                                 {
+                                    CustomerDic[k].Rewards.Points -= points;
                                     double amt = points * 0.02;
                                     Console.WriteLine("You have redeem ${0} using {1} points", amt, points);
                                     total -= amt;
@@ -1028,6 +1142,8 @@ while (true)
                             }
                         }
                     }
+                    Console.WriteLine("Press any key to continue");
+                    Console.ReadKey();
                     int numOfIceCream = CustomerDic[k].CurrentOrder.IceCreamList.Count(); //Counting the number of ice cream in order
                     CustomerDic[k].Rewards.PunchCard = numOfIceCream; //Adding count to punchcard
                     if (CustomerDic[k].Rewards.PunchCard > 10)
@@ -1048,6 +1164,7 @@ while (true)
                     }
                     //Adding time of fulfilled order
                     CustomerDic[k].CurrentOrder.TimeFulfilled = DateTime.Now;
+                    appendOrder(CustomerDic[k]); //Appending currentorder to order.csv
                     //Creating Final Total
                     CustomerDic[k].CurrentOrder.FinalTotal = total;
                     //Adding the fulfilled order to order history

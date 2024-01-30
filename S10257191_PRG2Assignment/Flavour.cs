@@ -21,10 +21,10 @@ namespace S10257191_PRG2Assignment
         public Flavour(string type, bool premium, int qty)
         {
             Type = type;
-            Premium = premium;
+            Premium = premium; //True if preminum
             Quantity = qty;
         }
-
+        
         public override string ToString()
         {
             string extra =  "is not"; 

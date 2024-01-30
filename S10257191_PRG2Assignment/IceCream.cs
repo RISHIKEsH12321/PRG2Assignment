@@ -58,13 +58,13 @@ namespace S10257191_PRG2Assignment
         public Cup(string option, int scoops, List<Flavour> flavours, List<Topping> toppings)
             : base(option, scoops, flavours, toppings)
         {
-            Option = "Cup";
+            Option = "Cup"; //Default assignment
         }
 
         public override double CalculatePrice()
         {
-            double total = 0;
-
+            double total = 0; //Price of icecream
+            //Scoop NUmber
             switch (Scoop)
             {
                 case 1:
@@ -83,7 +83,7 @@ namespace S10257191_PRG2Assignment
             {
                 if (flavour.Premium)
                 {
-                    total += flavour.Quantity * 2;
+                    total += flavour.Quantity * 2; // May have more than 1 in quantity 
                 }
             }
 
@@ -110,7 +110,7 @@ namespace S10257191_PRG2Assignment
             : base(option, scoops, flavours, toppings)
         {
             Dipped = dip;
-            Option = "Cone";
+            Option = "Cone"; //Deafult Assignment
         }
 
         public override double CalculatePrice()
@@ -164,7 +164,7 @@ namespace S10257191_PRG2Assignment
             : base(option, scoops, flavours, toppings)
         {
             WaffleFlavour = waffle;
-            Option = "Waffle";
+            Option = "Waffle"; //Deafult Assignment
         }
 
         public override double CalculatePrice()

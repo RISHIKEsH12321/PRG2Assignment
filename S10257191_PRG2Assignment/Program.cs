@@ -1034,6 +1034,7 @@ while (true)
                                 }
                                 else //Redeem points
                                 {
+                                    CustomerDic[k].Rewards.Points -= points;
                                     double amt = points * 0.02;
                                     Console.WriteLine("You have redeem ${0} using {1} points", amt, points);
                                     total -= amt;
@@ -1138,6 +1139,7 @@ while (true)
                                 }
                                 else //Redeem points
                                 {
+                                    CustomerDic[k].Rewards.Points -= points;
                                     double amt = points * 0.02;
                                     Console.WriteLine("You have redeem ${0} using {1} points", amt, points);
                                     total -= amt;

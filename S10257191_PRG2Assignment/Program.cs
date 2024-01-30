@@ -213,23 +213,15 @@ void DisplayMenu()
                       "===============================================\n");
 }
 
+
 void ListCustomers()
 {
-    using (StreamReader sr = new StreamReader("customers.csv"))
+    Console.WriteLine("{0,-10} {1,-10} {2,-15} {3,-20} {4,-20} {5,-10}",
+                "Name", "MemberID", "DOB", "Membership Status", "Points", "Punchcard");
+    foreach (Customer customer in CustomerDic.Values)
     {
-        string? s = sr.ReadLine();
-        if (s != null)
-        {
-            string[] heading = s.Split(',');
-            Console.WriteLine("{0,-10} {1,-10} {2,-15} {3,-20} {4,-20} {5,-10}",
-                heading[0], heading[1], heading[2], heading[3], heading[4], heading[5]);
-        }
-        while ((s = sr.ReadLine()) != null)
-        {
-            string[] customer = s.Split(',');
-            Console.WriteLine("{0,-10} {1,-10} {2,-15} {3,-20} {4,-20} {5,-10}",
-                customer[0], customer[1], customer[2], customer[3], customer[4], customer[5]);
-        }
+        Console.WriteLine("{0,-10} {1,-10} {2,-15} {3,-20} {4,-20} {5,-10}",
+                customer.Name, customer.MemberId, customer.DOB.ToString("dd/MM/yyyy"), customer.Rewards.Tier, customer.Rewards.Points, customer.Rewards.PunchCard);
     }
     Console.WriteLine();
 }
@@ -551,7 +543,6 @@ void DisplayBreakDown(Dictionary<int, Customer> CustomerDic)
 
 string appendFlavour(IceCream ice)
 {
-    Console.WriteLine(ice.Scoop);
     string order;
     if (ice.Scoop == 1)
     {
@@ -573,7 +564,6 @@ string appendFlavour(IceCream ice)
     }
     else if (ice.Scoop == 3)
     {
-        Console.WriteLine(ice.Flavours.Count() + "Shouldbe 3");
         if (ice.Flavours.Count() == 3)
         {
             order = "," + ice.Flavours[0].Type + "," + ice.Flavours[1].Type + "," + ice.Flavours[2].Type;
@@ -643,9 +633,7 @@ void appendOrder(Customer cust)
             {
                 order += "," + ice.Option + "," + ice.Scoop + ",,";
                 order += appendFlavour(ice);
-                Console.WriteLine(order);
                 order += appendToppings(ice);
-                Console.WriteLine(order);
 
                 sw.WriteLine(order);
             }
@@ -1034,6 +1022,7 @@ while (true)
                                 }
                                 else //Redeem points
                                 {
+                                    CustomerDic[k].Rewards.Points -= points;
                                     double amt = points * 0.02;
                                     Console.WriteLine("You have redeem ${0} using {1} points", amt, points);
                                     total -= amt;
@@ -1138,6 +1127,7 @@ while (true)
                                 }
                                 else //Redeem points
                                 {
+                                    CustomerDic[k].Rewards.Points -= points;
                                     double amt = points * 0.02;
                                     Console.WriteLine("You have redeem ${0} using {1} points", amt, points);
                                     total -= amt;

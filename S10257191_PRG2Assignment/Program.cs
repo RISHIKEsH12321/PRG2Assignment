@@ -1153,7 +1153,8 @@ while (true)
                     CustomerDic[k].CurrentOrder.FinalTotal = total;
                     //Adding the fulfilled order to order history
                     CustomerDic[k].OrderHistory.Add(CustomerDic[k].CurrentOrder);
-                    
+                    //Chaging Current Order to Null
+                    CustomerDic[k].CurrentOrder = null;
                     break;
                 }
             }
@@ -1267,6 +1268,8 @@ while (true)
                     CustomerDic[k].CurrentOrder.FinalTotal = total;
                     //Adding the fulfilled order to order history
                     CustomerDic[k].OrderHistory.Add(CustomerDic[k].CurrentOrder);
+                    //Chaging Current Order to Null
+                    CustomerDic[k].CurrentOrder = null;
                     break;
                 }
             }

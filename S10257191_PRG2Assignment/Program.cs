@@ -645,22 +645,22 @@ string appendToppings(IceCream ice)
     string order;
     if (ice.Toppings.Count() == 1)
     {
-        order = "," + ice.Toppings + ",,,";
+        order = "," + ice.Toppings[0].Type + ",,,";
         return order;
     }
     else if (ice.Toppings.Count() == 2)
     {
-        order = "," + ice.Toppings[0] + "," + ice.Toppings[1] + ",,";
+        order = "," + ice.Toppings[0].Type + "," + ice.Toppings[1].Type + ",,";
         return order;
     }
     else if (ice.Toppings.Count() == 3)
     {
-        order = "," + ice.Toppings[0] + "," + ice.Toppings[1] + "," + ice.Toppings[2] + ",";
+        order = "," + ice.Toppings[0].Type + "," + ice.Toppings[1].Type + "," + ice.Toppings[2].Type + ",";
         return order;
     }
     else if (ice.Toppings.Count() == 4)
     {
-        order = "," + ice.Toppings[0] + "," + ice.Toppings[1] + "," + ice.Toppings[2] + "," + ice.Toppings[3];
+        order = "," + ice.Toppings[0].Type + "," + ice.Toppings[1].Type + "," + ice.Toppings[2].Type + "," + ice.Toppings[3].Type;
         return order;
     }
     else
@@ -671,7 +671,7 @@ void appendOrder(Customer cust)
     string order;
     using (StreamWriter sw = new StreamWriter("orders.csv", true))
     {
-        sw.WriteLine("\n");
+        sw.WriteLine();
         foreach (IceCream ice in cust.CurrentOrder.IceCreamList)
         {
             order = cust.CurrentOrder.Id + "," + cust.MemberId + "," + cust.CurrentOrder.TimeRecieved + "," + cust.CurrentOrder.TimeFulfilled;

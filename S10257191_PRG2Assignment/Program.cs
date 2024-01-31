@@ -31,14 +31,18 @@ Dictionary<string, bool> FlavourDic = new Dictionary<string, bool>
     { "Sea Salt", true },
 };
 
+//Creating Queues for orders
 Queue<Order> regularOrderQueue = new Queue<Order>();
 Queue<Order> goldOrderQueue = new Queue<Order>();
 int orderCount = 0;
 
+//initializing Custoemr and Orders
 InnitCustomer(CustomerDic);
+//TO keep count of Order ID so that newly created orders can have continuous values
 orderCount = InnitOrders(CustomerDic, orderCount);
 orderCount++;
 
+//Read from Custoemr.csv and append data into CustomerDIc
 void InnitCustomer(Dictionary<int, Customer> cusDic)
 {
     using (StreamReader sr = new StreamReader("customers.csv"))
@@ -48,23 +52,30 @@ void InnitCustomer(Dictionary<int, Customer> cusDic)
         while ((s = sr.ReadLine()) != null)
         {
             string[] data = s.Split(',');
+            //Data in file
             //Name, MemberId, DOB, MembershipStatus(Tier), MembershipPoints, PunchCard
             try
             {
+                //Converting into Correct Data Types
                 int id = Convert.ToInt32(data[1]);
                 DateTime dob = Convert.ToDateTime(data[2]);
+                //Adding Customer To Dic
                 cusDic.Add(id, new Customer(data[0], id, dob));
+                //Data for the PointCard object in Custoemr object
                 cusDic[id].Rewards.Points = Convert.ToInt32(data[4]);
                 cusDic[id].Rewards.PunchCard = Convert.ToInt32(data[5]);
                 cusDic[id].Rewards.Tier =Convert.ToString(data[3]);
             }
             catch
             {
+                //Most Likely Cause for an error
                 Console.WriteLine("Invalid Data in csv files.");
             }
         }
     }
 }
+
+//Read from Order.csv and add to CustomerDic's order histories
 int InnitOrders(Dictionary<int, Customer> cusDic, int orderCount)
 {
     using (StreamReader sr = new StreamReader("orders.csv"))
@@ -74,6 +85,7 @@ int InnitOrders(Dictionary<int, Customer> cusDic, int orderCount)
         while ((s = sr.ReadLine()) != null)
         {
             string?[] data = s.Split(',');
+            //Data and their indexes
             //Id[0], MemberId[1], TimeReceived[2], TimeFulfilled[3], Option[4], Scoops[5],
             //Dipped[6], WaffleFlavour[7],
             //Flavour1[8], Flavour2[9], Flavour3[10],
@@ -81,22 +93,26 @@ int InnitOrders(Dictionary<int, Customer> cusDic, int orderCount)
 
             try
             {
+                //Converting to Correct Data Types
                 int OrderId = Convert.ToInt32(data[0]);
                 orderCount = OrderId;
                 int Memid = Convert.ToInt32(data[1]);
                 DateTime Recieved = Convert.ToDateTime(data[2]);               
                 DateTime fulfilled = Convert.ToDateTime(data[3]);
-
                 string option = data[4];
                 int scoops = Convert.ToInt32(data[5]);
                 //Converted dipped in object creation
-                string? waffleFlavour = data[7];                
+                string? waffleFlavour = data[7];       
+                
+                //Creating teh falvours
                 List<Flavour> fList = new List<Flavour>();
+                //Loop through the data array for the indexes that contain flavour data
                 for (int i = 8; i <= 10; i++)
                 {                    
-                    if (!string.IsNullOrEmpty(data[i]))
+                    if (!string.IsNullOrEmpty(data[i])) //IsNullOrEmpty to check if ther eis a flavour or not in that data spot
                     {
                         bool inFlist = false;
+                        //Checks if flavour is already in the list so that there are no duplicated list Vanilla(1), Vanilla(1)
                         foreach (Flavour f in fList)
                         {
                             if (f.Type == data[i])
@@ -106,6 +122,7 @@ int InnitOrders(Dictionary<int, Customer> cusDic, int orderCount)
                                 break;
                             }
                         }
+                        //If flavour does not already exsist, we add a that flavour object to the list
                         if (!inFlist)
                         {
                             Flavour flavour = new Flavour(data[i], FlavourDic[data[i]], 0);
@@ -114,6 +131,8 @@ int InnitOrders(Dictionary<int, Customer> cusDic, int orderCount)
                         }                                               
                     }
                 }
+
+                //Same thing for topping as flavour
                 List<Topping> tList = new List<Topping>();
                 for (int i = 11; i < 15; i++)
                 {
@@ -122,7 +141,10 @@ int InnitOrders(Dictionary<int, Customer> cusDic, int orderCount)
                         tList.Add(new Topping(data[i]));
                     }
                 }
+                //Creating the IceCream object with the data read
                 IceCream ic;
+                //Downcasts based on the option of the icecream
+                //and appends appropriate data based on icecream option
                 if (option == "Cup")
                 {
                     ic = new Cup(option, scoops, fList, tList);
@@ -131,18 +153,20 @@ int InnitOrders(Dictionary<int, Customer> cusDic, int orderCount)
                 {
                     bool dipped = Convert.ToBoolean(data[6]);
                     ic = new Cone(option, scoops, fList, tList, dipped);
-                    //Console.WriteLine(dipped);
-                    //Console.WriteLine(ic);
                 }
                 else
                 {
                     ic = new Waffle(option, scoops, fList, tList, waffleFlavour);
                 }
-                                                
+                //Creating the order obeject that will be put into orderhistory                            
                 Order pOrder = new Order(OrderId, Recieved);
                 pOrder.TimeFulfilled = fulfilled;
                 
                 bool check = true;
+                //Checks if the Order Id of the current line of csv already exsists in the customers
+                //OrderHistory
+
+                //If it does, we add the current IceCream to the IceCream list of the order History
                 foreach (Order order in cusDic[Memid].OrderHistory)
                 {
                     if (order.Id == OrderId)
@@ -152,11 +176,13 @@ int InnitOrders(Dictionary<int, Customer> cusDic, int orderCount)
                         break;
                     }
                 }
+                //If it doesn't we add the ice order and append the order to the order history
                 if (check)
                 {
                     pOrder.IceCreamList.Add(ic);
                     cusDic[Memid].OrderHistory.Add(pOrder);
                 }
+                //Keep count of the orderID for future orders
                 orderCount = OrderId;
             }
             catch (Exception ex)
@@ -165,12 +191,35 @@ int InnitOrders(Dictionary<int, Customer> cusDic, int orderCount)
             }   
         }
     }
+    //Checks if the order data fulfilled is a birthday to apply discount
+    double IsBirthDay(Order order, int day, int month)
+    {
+        double discount = 0;
+        if (order.TimeFulfilled.HasValue && order.TimeFulfilled.Value.Day == day && order.TimeFulfilled.Value.Month == month)
+        {
+            foreach (IceCream ic in order.IceCreamList)
+            {
+                if (ic.CalculatePrice() > discount)
+                {
+                    discount = ic.CalculatePrice();
+                }
+            }
+        }
+        return discount;
+    }
+    //Calculation the final total for the orders
     foreach (Customer c in cusDic.Values)
     {
-        foreach(Order o in c.OrderHistory) { o.FinalTotal = o.CalculateTotal(); }
+        foreach (Order o in c.OrderHistory)
+        {
+            o.FinalTotal = o.CalculateTotal() - IsBirthDay(o,c.DOB.Day,c.DOB.Month);
+        }
     }
     return orderCount;
 }
+
+//Data Validation method that works for integer inputs
+//Takes in input promt and list of allowable values
 int DataValidationInt(string prompt, List<int> listOfValues)
 {
     int option;
@@ -178,8 +227,11 @@ int DataValidationInt(string prompt, List<int> listOfValues)
     {
         try
         {
+            //Asks for input and converts it into int 
             Console.Write(prompt);
             option = Convert.ToInt32(Console.ReadLine());
+            //If the option is not inside the range of allowable values
+            //Ask for input again
             while (!(listOfValues.Contains(option)))
             {
                 Console.WriteLine("Invalid Input.");
@@ -188,9 +240,9 @@ int DataValidationInt(string prompt, List<int> listOfValues)
             }
             break;
         }
-        catch (Exception ex)
+        catch//Most likely to be called when converting innput to int 
         {
-            Console.WriteLine(ex.Message);
+            Console.WriteLine("Enter a whole number.");
         }
     }
     return option;
@@ -233,17 +285,18 @@ IceCream CreateIceCream()
         Console.WriteLine("Enter the option of the type of Ice Cream you want:");
         Console.WriteLine("[1] Cup\r\n[2] Cone\r\n[3] Waffle");
         List<int> IceCreamOption = new List<int>() { 1, 2, 3 };
-
+        //Displays options 
         while (true)
         {
             try
             {
+                //Creates object based on option and input the
+                //appropritate data based on type like dipepd and waffle flavour
+
                 int OptionOption = DataValidationInt("Enter your Option Number: ", IceCreamOption);
                 if (OptionOption == 1)
                 {
-
                     Cup newIceCream = new Cup();
-
                     ScoopFlavour(newIceCream);
                     IceCreamTopping(newIceCream);
                     return newIceCream;
@@ -278,10 +331,12 @@ IceCream CreateIceCream()
         int scoops = 0;
         while (scoops < 3)
         {
-            if (scoops == 3)
+            if (scoops == 3)//Checks the numebr of scoops and stops the code if there are 3
             {
+                Console.WriteLine("Ice Cream can only have 3 sscoops.");
                 break;
             }
+            //Display Options
             Console.WriteLine
                 (
                 "Regular Flavours" +
@@ -297,6 +352,7 @@ IceCream CreateIceCream()
             {
                 try
                 {
+                    //Flavour Dictionary
                     Dictionary<int, string> FlavourDic = new Dictionary<int, string>
                     {
                     { 1, "Vanilla" },
@@ -306,39 +362,40 @@ IceCream CreateIceCream()
                     { 5, "Ube" },
                     { 6, "Sea Salt" }
                     };
-
+                    //Ask for input on flavour and the number of scoops it can have
                     int option = DataValidationInt("Enter Your Flavour Number: ", new List<int>() { 1, 2, 3, 4, 5, 6 });
-                    if (FlavourDic.ContainsKey(option))
+                    int FlavourScoopNum = DataValidationInt($"Enter the number of Scoops of {FlavourDic[option]}: "
+                            , new List<int> { 1, 2, 3 });
+                    while ((FlavourScoopNum + scoops) > 3)//Checks if number of scoops is allowed after adding current scoops 
                     {
-                        int FlavourScoopNum = DataValidationInt($"Enter the number of Scoops of {FlavourDic[option]}: "
-                            , new List<int> { 1, 2, 3 });
-                        while ((FlavourScoopNum + scoops) > 3)
+                        Console.WriteLine("You cannot have more than 3 scoops per Ice Cream.");
+                        FlavourScoopNum = DataValidationInt($"Enter the number of Scoops of {FlavourDic[option]}: "
+                        , new List<int> { 1, 2, 3 });
+                    }
+                    //Update Scoops amount
+                    scoops += FlavourScoopNum;
+                    //Craetes flavour object and adds it to falvour list in icecream
+                    if (FlavourScoopNum != 0)
+                    {
+                        if (option == 4 || option == 5 || option == 6)
                         {
-                            Console.WriteLine("You cannot have more than 3 scoops per Ice Cream.");
-                            FlavourScoopNum = DataValidationInt($"Enter the number of Scoops of {FlavourDic[option]}: "
-                            , new List<int> { 1, 2, 3 });
+                            newIceCream.Flavours.Add(new Flavour(FlavourDic[option], true, FlavourScoopNum));
                         }
-                        scoops += FlavourScoopNum;
-                        if (FlavourScoopNum != 0)
+                        else
                         {
-                            if (option == 4 || option == 5 || option == 6)
-                            {
-                                newIceCream.Flavours.Add(new Flavour(FlavourDic[option], true, FlavourScoopNum));
-                            }
-                            else
-                            {
-                                newIceCream.Flavours.Add(new Flavour(FlavourDic[option], false, FlavourScoopNum));
-                            }
-                        }
-                        int AddMoreFlavourOption = DataValidationInt("Enter '1' to add more flavours and '0' To exit: ", new List<int> { 0, 1 });
-                        if (AddMoreFlavourOption == 0 || scoops == 3)
-                        {
-                            break;
+                            newIceCream.Flavours.Add(new Flavour(FlavourDic[option], false, FlavourScoopNum));
                         }
                     }
-                    else
+                    //Ask if user wants more 
+                    int AddMoreFlavourOption = DataValidationInt("Enter '1' to add more flavours and '0' To exit: ", new List<int> { 0, 1 });
+                    //Prints statement based on input and if scoops is 3
+                    if (AddMoreFlavourOption == 0 || scoops == 3)
                     {
-                        Console.WriteLine("Enter a Vaild Option.");
+                        if (scoops == 3)
+                        {
+                            Console.WriteLine("Ice Cream can only have 3 sscoops.");                            
+                        }
+                        break;
                     }
                 }
                 catch (Exception ex)
@@ -354,6 +411,7 @@ IceCream CreateIceCream()
     //Creating the Toppings
     void IceCreamTopping(IceCream newIceCream)
     {
+        //Display Options
         Console.WriteLine(
         "Toppings (+1 each)\r\n" +
         "[1]Sprinkles\r\n" +
@@ -369,47 +427,44 @@ IceCream CreateIceCream()
             { 3, new Topping("Sago") },
             { 4, new Topping("Oreos") }
         };
-
+        //Checks if can add more topping
         while (newIceCream.Toppings.Count < 4)
         {
             int ToppingOption = DataValidationInt("Enter the option number for the topping you want:", new List<int> { 1, 2, 3, 4, 5 });
-            if (ToppingOption == 1 || ToppingOption == 2 || ToppingOption == 3
-                || ToppingOption == 4 || ToppingOption == 5)
+            if (ToppingOption == 5)//Break to exit topping selection
             {
-                if (ToppingOption == 5)
-                {
-                    break;
-                }
-                newIceCream.Toppings.Add(ToppingsDic[ToppingOption]);
-
-                if (newIceCream.Toppings.Count == 4)
-                {
-                    Console.WriteLine("Max Toppings Amount Limit Reached.");
-                    break;
-                }
-                else
-                {
-                    Console.WriteLine($"Number of toppings left: {4 - newIceCream.Toppings.Count}");
-                }
+                break;
+            }
+            //Adds topping to topping list in ice cream
+            newIceCream.Toppings.Add(ToppingsDic[ToppingOption]);
+            
+            //Unable to add more toppings 
+            if (newIceCream.Toppings.Count == 4)
+            {
+                Console.WriteLine("Max Toppings Amount Limit Reached.");
+                break;
             }
             else
             {
-                Console.WriteLine("Enter a valid option.");
+                Console.WriteLine($"Number of toppings left: {4 - newIceCream.Toppings.Count}");
             }
         }
     }
 
+    //If IceCream is a Cone, this method is called
     void ConeDipped(Cone newIceCream)
     {
+        //Asks for input
         Console.Write("Do you want your Cone to be Dipped in Chocolate (Y/N): ");
         string reply = Console.ReadLine().ToUpper();
+        //Data Validation
         while (reply != "Y" && reply != "N")
         {
             Console.WriteLine("Invalid input");
             Console.Write("Do you want your Cone to be Dipped in Chocolate (Y/N): ");
             reply = Console.ReadLine().ToUpper();
         }
-
+        //Setting Dipped Value
         if (reply == "Y")
         {
             newIceCream.Dipped = true;
@@ -429,6 +484,7 @@ IceCream CreateIceCream()
             {3, "Charcoal" },
             {4, "Pandan" }
         };
+        //Displays Options
         Console.WriteLine(
             "Waffle Flavours:\n" +
             "[1] Basic\n" +
@@ -440,7 +496,9 @@ IceCream CreateIceCream()
         {
             try
             {
+                //Ask for input
                 int WaffleFlavourOption = DataValidationInt("Enter your Waffle Flavour Option: ", new List<int> { 1, 2, 3, 4 });
+                //Sets waffle flavour
                 newIceCream.WaffleFlavour = waffleFalvourDic[WaffleFlavourOption];
                 break;
             }
@@ -451,29 +509,14 @@ IceCream CreateIceCream()
         }
     }
 
+    //Created IceCream Object and runs necessacry methods
     IceCream newIceCream = IceCreamType();
     //Returns IceCream
     return newIceCream;
 }
 void DisplayBreakDown(Dictionary<int, Customer> CustomerDic)
 {
-    /*double IsBirthDay(Order order, int day, int month)
-    {
-        double discount = 0;
-        if (order.TimeFulfilled.HasValue && order.TimeFulfilled.Value.Day == day && order.TimeFulfilled.Value.Month == month)
-        {
-            foreach (IceCream ic in order.IceCreamList)
-            {
-                if (ic.CalculatePrice() > discount)
-                {
-                    discount = ic.CalculatePrice();
-                }
-            }
-        }
-        return discount;
-    }
-    */
-    
+    //Dictionary that has key(month value in int) and value(monthly charged amounts)
     Dictionary<int, double> monthDic = new Dictionary<int, double>
     {
         {1,0},
@@ -494,6 +537,7 @@ void DisplayBreakDown(Dictionary<int, Customer> CustomerDic)
     {
         try
         {
+            //Input and data validation for year
             Console.Write("Enter the year: ");
             int year = Convert.ToInt32(Console.ReadLine());         
             while (year < DateTime.MinValue.Year || year > DateTime.MaxValue.Year)
@@ -502,30 +546,32 @@ void DisplayBreakDown(Dictionary<int, Customer> CustomerDic)
                 Console.Write("Enter the year: ");
                 year = Convert.ToInt32(Console.ReadLine());
             }
-
+            //Loops through all orders for all customers 
             foreach (var kvp in CustomerDic)
             {                 
                 foreach (Order o in kvp.Value.OrderHistory)
                 {
+                    //If the order fulfilled year is the same, we add the total of that orde to the month of the order
                     if (o.TimeFulfilled.HasValue && o.TimeFulfilled.Value.Year == year)
                     {
                         monthDic[o.TimeFulfilled.Value.Month] += o.FinalTotal;
-                        Console.WriteLine(o.FinalTotal);
-                        //monthDic[o.TimeFulfilled.Value.Month] += o.FinalTotal;
-                        //monthDic[o.TimeFulfilled.Value.Month] -= IsBirthDay(o, kvp.Value.DOB.Day, kvp.Value.DOB.Month);
                     }
                 }
             }
+            //Display nothing if there were no orders
             if (monthDic.Values.Sum() == 0)
             {
                 Console.WriteLine("There were no orders this year.");
             }
+            //Display breakdown amounts
             else
             {
+                Console.WriteLine();
+                Console.WriteLine($"{year} Breakdown:");
                 foreach (var entry in monthDic)
                 {
                     string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(entry.Key);
-                    Console.WriteLine($"{monthName,-15}: ${entry.Value:0.00}");
+                    Console.WriteLine($"{monthName,-10}: ${entry.Value:0.00}");
                 }
                 Console.WriteLine($"Total: ${monthDic.Values.Sum():0.00}");
             }
@@ -673,7 +719,7 @@ while (true)
     {
         ListCustomers();
     }
-    //Question 2
+    //Question 2 (Rishikesh)
     else if (opt == 2)
     {
         int count = 0;
@@ -693,7 +739,7 @@ while (true)
             count++;
         }
         Console.WriteLine("================================================");
-        if (count == 0)
+        if (count == 0)//Confirmation if there are no orders
         {
             Console.WriteLine("Currently, there are no unfulfilled orders.");
         }
@@ -840,59 +886,89 @@ while (true)
 
     }
 
-    //Question 5
+    //Question 5(Rishikesh)
     else if (opt == 5)
     {
+        //Displays customer name and id
         foreach (KeyValuePair<int, Customer> customer in CustomerDic)
         {
             Console.WriteLine($"{customer.Value.MemberId}: {customer.Value.Name}");
         }
-
+        //Input and validation
         int id;
-        Console.Write("Enter your Customer ID: ");
-        id = Convert.ToInt32(Console.ReadLine());
-        while (!CustomerDic.ContainsKey(id))
+        while (true)
         {
-            Console.WriteLine("Invalid Id.");
-            Console.Write("Enter your Customer ID: ");
-            id = Convert.ToInt32(Console.ReadLine());
+            try
+            {
+                Console.Write("Enter your Customer ID: ");
+                id = Convert.ToInt32(Console.ReadLine());
+                while (!CustomerDic.ContainsKey(id))
+                {
+                    Console.WriteLine("Invalid Id.");
+                    Console.Write("Enter your Customer ID: ");
+                    id = Convert.ToInt32(Console.ReadLine());
+                }
+                break;
+            }
+            catch
+            {
+                Console.WriteLine("Invalid Input.");
+            }
         }
+        int count = 0;
+        //Prints past orders
         foreach (Order order in CustomerDic[id].OrderHistory)
         {
             Console.WriteLine(order);
+            count++;
         }
+        //Prints current order if there is one
         if (CustomerDic[id].CurrentOrder != null)
         {
             if (CustomerDic[id].CurrentOrder.IceCreamList.Count != 0)
             {
                 Console.WriteLine(CustomerDic[id].CurrentOrder);
+                count++;
             }
         }
-
+        //Prints if there is no order to inform user
+        if (count == 0) { Console.WriteLine("This Customer Has No Past Or Present Order."); }
     }
-    //Question 6
+    //Question 6(Rishikesh)
     else if (opt == 6)
     {
+        //Display Cusomers and thier IDs
         foreach (KeyValuePair<int, Customer> customer in CustomerDic)
         {
             Console.WriteLine($"{customer.Value.MemberId}: {customer.Value.Name}");
         }
-
+        //ID input and validation
         int id;
-        Console.Write("Enter your Customer ID: ");
-        id = Convert.ToInt32(Console.ReadLine());
-        while (!CustomerDic.ContainsKey(id))
+        while (true)
         {
-            Console.WriteLine("Invalid Id.");
-            Console.Write("Enter your Customer ID: ");
-            id = Convert.ToInt32(Console.ReadLine());
-        }
-
+            try
+            {
+                Console.Write("Enter your Customer ID: ");
+                id = Convert.ToInt32(Console.ReadLine());
+                while (!CustomerDic.ContainsKey(id))
+                {
+                    Console.WriteLine("Invalid Id.");
+                    Console.Write("Enter your Customer ID: ");
+                    id = Convert.ToInt32(Console.ReadLine());
+                }
+                break;
+            }
+            catch
+            {
+                Console.WriteLine("Enter A Valid Customer ID.");
+            }
+        }        
+        //Checks if chosen customer has a current order and break if there is none
         if (CustomerDic[id].CurrentOrder != null)
         {
             Order CurrentOrder = CustomerDic[id].CurrentOrder;
 
-
+            //Display Options
             Console.WriteLine(
                 "Modify Order Details:\r\n" +
                 "[1] Choose Ice Cream to Modify\r\n" +
@@ -905,6 +981,7 @@ while (true)
             {
                 try
                 {
+                    //Input
                     Console.Write("Enter your option: ");
                     Option6Option = DataValidationInt("Enter your option: ",
                         new List<int> { 1, 2, 3 });
@@ -912,29 +989,51 @@ while (true)
                     {
                         case 1:
                             int count = 1;
+                            Console.WriteLine();
+                            //Displays Current IceCreams
+                            List<int> list = new List<int>();
                             foreach (IceCream ic in CurrentOrder.IceCreamList)
                             {
-                                Console.WriteLine($"[{count}]: \n{ic}");
+                                Console.WriteLine($"[{count}]: \n{ic}\n");
                                 count++;
                             }
-                            Console.Write("Enter which Ice Cream you want to change: ");
-                            int ChangeIceCreamID = Convert.ToInt16(Console.ReadLine());
+                            //Populate List for Data Validation
+                            for (int i = 1; i < count; i++) { list.Add(i); }
+                            //Ask for input
+                            int ChangeIceCreamID = DataValidationInt("Enter which Ice Cream you want to change: ", list);
+                            //Call Method in Order.cs
                             CurrentOrder.ModifyIceCream(ChangeIceCreamID);
                             break;
                         case 2:
+                            //Create IceCream
                             IceCream NewIceCream = CreateIceCream();
+                            //Add IceCream to the list of order
                             CurrentOrder.AddIceCream(NewIceCream);
+                            //Display new IceCream
                             Console.WriteLine(NewIceCream);
                             break;
 
                         case 3:
+                            if (CurrentOrder.IceCreamList.Count == 1)
+                            {
+                                Console.WriteLine("Cannot Remove IceCream as there cannot be 0 IceCreams in a order.");
+                                break;
+                            }
+                            //Display IceCreams 
+                            int count2 = 1;
+                            List<int> list2 = new List<int>();
+                            Console.WriteLine();
                             foreach (IceCream ic in CurrentOrder.IceCreamList)
                             {
-                                Console.WriteLine(ic);
+                                Console.WriteLine($"[{count2}]: \n{ic}\n");
+                                count2++;
                             }
-                            Console.Write("Enter which Ice Cream you want to Delete: ");
-                            int DeleteIceCreamID = Convert.ToInt16(Console.ReadLine());
+                            //Populate List for Data Validation
+                            for (int i = 1; i < count2; i++) { list2.Add(i); }
+                            //Input and Validation
+                            int DeleteIceCreamID = DataValidationInt("Enter which Ice Cream you want to Delete: ", list2);
                             CurrentOrder.DeleteIceCream(DeleteIceCreamID);
+
                             break;
                     }
                     break;
@@ -943,7 +1042,6 @@ while (true)
                 {
                     Console.WriteLine(ex.Message);
                 }
-
             }
         }
         else
@@ -951,7 +1049,7 @@ while (true)
             Console.WriteLine("You do not have an order to modify. Place an order first.");
         }
     }
-    //Advance Question 1
+    //Advance Question 1 (Joseph)
     else if (opt == 7)
     {
         if (goldOrderQueue.Count() > 0)
@@ -1178,7 +1276,7 @@ while (true)
             Console.WriteLine("No order to process");
         }
     }
-    //Advance Question 2
+    //Advance Question 2 (Rishikesh)
     else if (opt == 8)
     {
         DisplayBreakDown(CustomerDic);
